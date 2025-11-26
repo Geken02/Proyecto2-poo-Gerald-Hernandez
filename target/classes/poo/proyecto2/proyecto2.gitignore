@@ -1,0 +1,11 @@
+# Carpetas compiladas
+target/
+*.class
+
+# Archivos del IDE
+.vscode/
+.idea/
+*.iml
+
+# Logs y otros
+*.log
