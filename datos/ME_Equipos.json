@@ -1,0 +1,75 @@
+[
+  {
+    "raiz": {
+      "id": 1,
+      "equipoPrincipal": 0,
+      "descripcion": "Servidor Principal",
+      "tipo": "Computadora",
+      "ubicacion": "Sala de Servidores",
+      "fabricante": "Dell",
+      "serie": "SVR-2025-001",
+      "fechaAdquisicion": "2024-01-15",
+      "fechaPuestaEnServicio": "2024-02-01",
+      "mesesVidaUtil": 60,
+      "estado": "FUNCIONANDO",
+      "costoInicial": 4500.0,
+      "especificacionesTecnicas": "Intel Xeon, 64GB RAM, 2TB SSD",
+      "informacionGarantia": "3 años, soporte 24/7",
+      "primerHijo": {
+        "id": 2,
+        "equipoPrincipal": 1,
+        "descripcion": "Disco SSD Principal",
+        "tipo": "Almacenamiento",
+        "ubicacion": "Bahía 1 - Servidor 1",
+        "fabricante": "Samsung",
+        "serie": "SSD-870-001",
+        "fechaAdquisicion": "2024-01-15",
+        "fechaPuestaEnServicio": "2024-02-01",
+        "mesesVidaUtil": 36,
+        "estado": "FUNCIONANDO",
+        "costoInicial": 200.0,
+        "especificacionesTecnicas": "2TB NVMe",
+        "informacionGarantia": "5 años",
+        "primerHijo": null,
+        "siguienteHermano": {
+          "id": 3,
+          "equipoPrincipal": 1,
+          "descripcion": "Fuente de Poder Redundante",
+          "tipo": "Fuente de Poder",
+          "ubicacion": "Servidor 1",
+          "fabricante": "Corsair",
+          "serie": "CS-PSU-001",
+          "fechaAdquisicion": "2024-01-15",
+          "fechaPuestaEnServicio": "2024-02-01",
+          "mesesVidaUtil": 48,
+          "estado": "FUNCIONANDO",
+          "costoInicial": 300.0,
+          "especificacionesTecnicas": "850W, 80+ Gold",
+          "informacionGarantia": "10 años",
+          "primerHijo": null,
+          "siguienteHermano": null
+        }
+      }
+    }
+  },
+  {
+    "raiz": {
+      "id": 4,
+      "equipoPrincipal": 0,
+      "descripcion": "Impresora Multifuncional",
+      "tipo": "Impresora",
+      "ubicacion": "Oficina Gerencia",
+      "fabricante": "HP",
+      "serie": "HP-MFP-402",
+      "fechaAdquisicion": "2023-11-10",
+      "fechaPuestaEnServicio": "2023-11-15",
+      "mesesVidaUtil": 24,
+      "estado": "EN_MANTENIMIENTO_PREVENTIVO",
+      "costoInicial": 800.0,
+      "especificacionesTecnicas": "Color, Wi-Fi, Dúplex",
+      "informacionGarantia": "1 año",
+      "primerHijo": null,
+      "siguienteHermano": null
+    }
+  }
+]
