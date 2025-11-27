@@ -52,12 +52,12 @@ public class Main {
             // Guardar
             try {
                 sistema.guardar();
-                System.out.println("✅ Datos de prueba guardados en datos/ME_Equipos.json");
+                System.out.println("Datos de prueba guardados en datos/ME_Equipos.json");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("✅ Datos cargados desde ME_Equipos.json:");
+            System.out.println("Datos cargados desde ME_Equipos.json:");
             System.out.println("- Número de árboles: " + sistema.getBosque().size());
             int totalNodos = 0;
             for (var arbol : sistema.getBosque()) {
