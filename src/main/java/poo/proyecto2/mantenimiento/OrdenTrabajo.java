@@ -5,26 +5,22 @@ import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 
-public class OrdenTrabajo {
-    @Expose private int id;
-    @Expose private int idEquipo;
-    @Expose private int idFase;
-    @Expose private LocalDate fechaEjecucion;
-    @Expose private LocalDate fechaInicioReal;
-    @Expose private LocalDate fechaFinReal;
-    @Expose private float horasTrabajo;
-    @Expose private int costoManoObra;
-    @Expose private int costoMateriales;
-    @Expose private String observaciones;
-    @Expose private List<TareaMantenimiento> tareas;
-    @Expose private EstadoOrden estado;
-
-    // --- Nuevos campos ---
-    // Cambio: Ahora cada falla observada incluye la descripción de la falla
-    @Expose private List<FallaObservada> fallasObservadas; // Lista de fallas registradas en esta orden
-    @Expose private LocalDate fechaCancelacion;
-    @Expose private String motivoCancelacion;
-    // --- Fin nuevos campos ---
+public abstract class OrdenTrabajo {
+    @Expose protected int id;
+    @Expose protected int idEquipo;
+    @Expose protected LocalDate fechaOrden; // Fecha en que se generó la orden
+    @Expose protected LocalDate fechaEjecucion; // Fecha en que debe ejecutarse
+    @Expose protected String observaciones;
+    @Expose protected LocalDate fechaInicioReal;
+    @Expose protected LocalDate fechaFinReal;
+    @Expose protected float horasTrabajo;
+    @Expose protected int costoManoObra;
+    @Expose protected int costoMateriales;
+    @Expose protected String observacionesEjecucion; // Observaciones al finalizar
+    @Expose protected EstadoOrden estado;
+    @Expose protected LocalDate fechaCancelacion;
+    @Expose protected String motivoCancelacion;
+    @Expose protected List<FallaObservada> fallasObservadas;
 
     public enum EstadoOrden {
         PENDIENTE,
@@ -33,13 +29,11 @@ public class OrdenTrabajo {
         CANCELADA
     }
 
-    // Clase interna para encapsular la falla observada
-    // Cumple con: "cada falla debe tener: Falla (identificación de la falla según lista de fallas), Causas, Acciones tomadas"
     public static class FallaObservada {
-        @Expose private int idFalla; // Identificación de la falla según lista de fallas (como solicitaste)
-        @Expose private String descripcionFalla; // Descripción de la falla (la identificación en texto)
-        @Expose private String causas; // Causas observadas
-        @Expose private String accionesTomadas; // Acciones tomadas
+        @Expose private int idFalla;
+        @Expose private String descripcionFalla;
+        @Expose private String causas;
+        @Expose private String accionesTomadas;
 
         public FallaObservada(int idFalla, String descripcionFalla, String causas, String accionesTomadas) {
             this.idFalla = idFalla;
@@ -50,51 +44,42 @@ public class OrdenTrabajo {
 
         // Getters
         public int getIdFalla() { return idFalla; }
-        public String getDescripcionFalla() { return descripcionFalla; } // <-- Nuevo getter
+        public String getDescripcionFalla() { return descripcionFalla; }
         public String getCausas() { return causas; }
         public String getAccionesTomadas() { return accionesTomadas; }
-
-        @Override
-        public String toString() {
-            return "FallaObservada{" +
-                    "idFalla=" + idFalla +
-                    ", descripcionFalla='" + descripcionFalla + '\'' +
-                    ", causas='" + causas + '\'' +
-                    ", accionesTomadas='" + accionesTomadas + '\'' +
-                    '}';
-        }
     }
 
-    public OrdenTrabajo(int id, int idEquipo, int idFase, LocalDate fechaEjecucion) {
+    // Constructor base
+    public OrdenTrabajo(int id, int idEquipo, LocalDate fechaOrden, LocalDate fechaEjecucion) {
         this.id = id;
         this.idEquipo = idEquipo;
-        this.idFase = idFase;
+        this.fechaOrden = fechaOrden;
         this.fechaEjecucion = fechaEjecucion;
-        this.tareas = new ArrayList<>();
-        this.fallasObservadas = new ArrayList<>(); // Inicializar lista
         this.estado = EstadoOrden.PENDIENTE;
+        this.fallasObservadas = new ArrayList<>();
     }
 
-    // Getters (viejos y nuevos)
+    // Getters
     public int getId() { return id; }
     public int getIdEquipo() { return idEquipo; }
-    public int getIdFase() { return idFase; }
+    public LocalDate getFechaOrden() { return fechaOrden; }
     public LocalDate getFechaEjecucion() { return fechaEjecucion; }
+    public String getObservaciones() { return observaciones; }
     public LocalDate getFechaInicioReal() { return fechaInicioReal; }
     public LocalDate getFechaFinReal() { return fechaFinReal; }
     public float getHorasTrabajo() { return horasTrabajo; }
     public int getCostoManoObra() { return costoManoObra; }
     public int getCostoMateriales() { return costoMateriales; }
-    public String getObservaciones() { return observaciones; }
-    public List<TareaMantenimiento> getTareas() { return new ArrayList<>(tareas); }
+    public String getObservacionesEjecucion() { return observacionesEjecucion; }
     public EstadoOrden getEstado() { return estado; }
-    // --- Getters nuevos ---
-    public List<FallaObservada> getFallasObservadas() { return new ArrayList<>(fallasObservadas); }
     public LocalDate getFechaCancelacion() { return fechaCancelacion; }
     public String getMotivoCancelacion() { return motivoCancelacion; }
-    // ---
+    public List<FallaObservada> getFallasObservadas() { return new ArrayList<>(fallasObservadas); }
 
-    // Métodos para registrar ejecución
+    // Setters para observaciones
+    public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
+
+    // Métodos comunes
     public void iniciar(LocalDate fechaInicio) {
         if (estado == EstadoOrden.PENDIENTE) {
             this.fechaInicioReal = fechaInicio;
@@ -108,17 +93,11 @@ public class OrdenTrabajo {
             this.horasTrabajo = horasTrabajo;
             this.costoManoObra = costoManoObra;
             this.costoMateriales = costoMateriales;
-            this.observaciones = observaciones;
+            this.observacionesEjecucion = observaciones;
             this.estado = EstadoOrden.COMPLETADA;
         }
     }
 
-    public void agregarTarea(TareaMantenimiento tarea) {
-        tareas.add(tarea);
-    }
-
-    // --- Nuevos métodos para manejo de fallas y cancelación ---
-    // Ahora el constructor de FallaObservada incluye la descripción, cumpliendo con el requisito.
     public void registrarFalla(int idFalla, String descripcionFalla, String causas, String accionesTomadas) {
         if (estado != EstadoOrden.CANCELADA) {
             fallasObservadas.add(new FallaObservada(idFalla, descripcionFalla, causas, accionesTomadas));
@@ -129,22 +108,5 @@ public class OrdenTrabajo {
         this.fechaCancelacion = fecha;
         this.motivoCancelacion = motivo;
         this.estado = EstadoOrden.CANCELADA;
-    }
-    // ---
-
-
-    @Override
-    public String toString() {
-        return "OrdenTrabajo{" +
-                "id=" + id +
-                ", idEquipo=" + idEquipo +
-                ", idFase=" + idFase +
-                ", fechaEjecucion=" + fechaEjecucion +
-                ", estado=" + estado +
-                ", tareas=" + tareas +
-                ", fallasObservadas=" + fallasObservadas +
-                ", fechaCancelacion=" + fechaCancelacion +
-                ", motivoCancelacion='" + motivoCancelacion + '\'' +
-                '}';
     }
 }
