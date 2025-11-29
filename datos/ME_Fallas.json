@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "descripcion": "Cortes en la banda"
+  },
+  {
+    "id": 2,
+    "descripcion": "Fallo en el motor"
+  }
+]

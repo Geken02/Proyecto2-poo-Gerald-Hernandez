@@ -3,18 +3,18 @@
     "raiz": {
       "id": 1,
       "equipoPrincipal": 0,
-      "descripcion": "Servidor Principal",
+      "descripcion": "Servidor Principal Actualizado",
       "tipo": "Computadora",
-      "ubicacion": "Sala de Servidores",
+      "ubicacion": "Sala Servidores",
       "fabricante": "Dell",
-      "serie": "SVR-2025-001",
+      "serie": "SN123",
       "fechaAdquisicion": "2024-01-15",
       "fechaPuestaEnServicio": "2024-02-01",
       "mesesVidaUtil": 60,
-      "estado": "FUNCIONANDO",
-      "costoInicial": 4500.0,
-      "especificacionesTecnicas": "Intel Xeon, 64GB RAM, 2TB SSD",
-      "informacionGarantia": "3 años, soporte 24/7",
+      "estado": "EN_MANTENIMIENTO_CORRECTIVO",
+      "costoInicial": 5000.0,
+      "especificacionesTecnicas": "Nueva espec",
+      "informacionGarantia": "Nueva garantía",
       "primerHijo": {
         "id": 2,
         "equipoPrincipal": 1,
@@ -30,7 +30,6 @@
         "costoInicial": 200.0,
         "especificacionesTecnicas": "2TB NVMe",
         "informacionGarantia": "5 años",
-        "primerHijo": null,
         "siguienteHermano": {
           "id": 3,
           "equipoPrincipal": 1,
@@ -46,8 +45,20 @@
           "costoInicial": 300.0,
           "especificacionesTecnicas": "850W, 80+ Gold",
           "informacionGarantia": "10 años",
-          "primerHijo": null,
-          "siguienteHermano": null
+          "siguienteHermano": {
+            "id": 2,
+            "equipoPrincipal": 1,
+            "descripcion": "Disco SSD",
+            "tipo": "Almacenamiento",
+            "ubicacion": "Bahía 1",
+            "fabricante": "Samsung",
+            "serie": "SSD456",
+            "fechaAdquisicion": "2024-01-15",
+            "fechaPuestaEnServicio": "2024-02-01",
+            "mesesVidaUtil": 36,
+            "estado": "FUNCIONANDO",
+            "costoInicial": 200.0
+          }
         }
       }
     }
@@ -67,9 +78,39 @@
       "estado": "EN_MANTENIMIENTO_PREVENTIVO",
       "costoInicial": 800.0,
       "especificacionesTecnicas": "Color, Wi-Fi, Dúplex",
-      "informacionGarantia": "1 año",
-      "primerHijo": null,
-      "siguienteHermano": null
+      "informacionGarantia": "1 año"
+    }
+  },
+  {
+    "raiz": {
+      "id": 1,
+      "equipoPrincipal": 0,
+      "descripcion": "Servidor Principal",
+      "tipo": "Computadora",
+      "ubicacion": "Sala Servidores",
+      "fabricante": "Dell",
+      "serie": "SN123",
+      "fechaAdquisicion": "2024-01-15",
+      "fechaPuestaEnServicio": "2024-02-01",
+      "mesesVidaUtil": 60,
+      "estado": "FUNCIONANDO",
+      "costoInicial": 5000.0
+    }
+  },
+  {
+    "raiz": {
+      "id": 3,
+      "equipoPrincipal": 0,
+      "descripcion": "Impresora HP",
+      "tipo": "Impresora",
+      "ubicacion": "Oficina 101",
+      "fabricante": "HP",
+      "serie": "IMP789",
+      "fechaAdquisicion": "2023-11-10",
+      "fechaPuestaEnServicio": "2023-11-15",
+      "mesesVidaUtil": 24,
+      "estado": "EN_MANTENIMIENTO_PREVENTIVO",
+      "costoInicial": 800.0
     }
   }
 ]

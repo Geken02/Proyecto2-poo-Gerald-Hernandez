@@ -1,0 +1,56 @@
+[
+  {
+    "tipo": "preventiva",
+    "idFase": 0,
+    "tareas": [],
+    "id": 1,
+    "idEquipo": 1,
+    "fechaOrden": "2025-11-28",
+    "fechaEjecucion": "2025-12-05",
+    "fechaInicioReal": "2025-11-29",
+    "fechaFinReal": "2025-11-30",
+    "horasTrabajo": 2.5,
+    "costoManoObra": 100,
+    "costoMateriales": 50,
+    "observacionesEjecucion": "Mantenimiento realizado con éxito",
+    "estado": "COMPLETADA",
+    "fallasReportadas": [],
+    "fallasEncontradas": [
+      {
+        "idFalla": 1,
+        "descripcionFalla": "Cortes en la banda",
+        "causas": "Sobrecalentamiento",
+        "accionesTomadas": "Añadir mejor ventilación"
+      }
+    ]
+  },
+  {
+    "tipo": "correctiva",
+    "id": 2,
+    "idEquipo": 3,
+    "fechaOrden": "2025-11-28",
+    "fechaEjecucion": "2025-11-29",
+    "observaciones": "La impresora no imprime",
+    "fechaInicioReal": "2025-11-29",
+    "fechaFinReal": "2025-11-30",
+    "horasTrabajo": 4.0,
+    "costoManoObra": 150,
+    "costoMateriales": 200,
+    "observacionesEjecucion": "Pieza reemplazada, funciona correctamente",
+    "estado": "COMPLETADA",
+    "fallasReportadas": [
+      {
+        "causas": "El toner no se mueve",
+        "accionesTomadas": "Revisar engranajes"
+      }
+    ],
+    "fallasEncontradas": [
+      {
+        "idFalla": 2,
+        "descripcionFalla": "Fallo en el motor",
+        "causas": "Fallo mecánico interno",
+        "accionesTomadas": "Reemplazar pieza dañada"
+      }
+    ]
+  }
+]
