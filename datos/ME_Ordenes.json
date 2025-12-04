@@ -1,55 +1,130 @@
 [
   {
     "tipo": "preventiva",
-    "idFase": 0,
-    "tareas": [],
-    "id": 1,
+    "id": 101,
     "idEquipo": 1,
-    "fechaOrden": "2025-11-28",
-    "fechaEjecucion": "2025-12-05",
-    "fechaInicioReal": "2025-11-29",
-    "fechaFinReal": "2025-11-30",
-    "horasTrabajo": 2.5,
-    "costoManoObra": 100,
-    "costoMateriales": 50,
-    "observacionesEjecucion": "Mantenimiento realizado con éxito",
-    "estado": "COMPLETADA",
-    "fallasReportadas": [],
-    "fallasEncontradas": [
-      {
-        "idFalla": 1,
-        "descripcionFalla": "Cortes en la banda",
-        "causas": "Sobrecalentamiento",
-        "accionesTomadas": "Añadir mejor ventilación"
-      }
-    ]
-  },
-  {
-    "tipo": "correctiva",
-    "id": 2,
-    "idEquipo": 3,
-    "fechaOrden": "2025-11-28",
-    "fechaEjecucion": "2025-11-29",
-    "observaciones": "La impresora no imprime",
-    "fechaInicioReal": "2025-11-29",
-    "fechaFinReal": "2025-11-30",
+    "idFase": 0,
+    "fechaOrden": "2025-03-01",
+    "fechaEjecucion": "2025-03-15",
+    "observaciones": "Mantenimiento preventivo trimestral.",
+    "fechaInicioReal": "2025-03-15",
+    "fechaFinReal": "2025-03-15",
     "horasTrabajo": 4.0,
-    "costoManoObra": 150,
-    "costoMateriales": 200,
-    "observacionesEjecucion": "Pieza reemplazada, funciona correctamente",
+    "costoManoObra": 200,
+    "costoMateriales": 50,
+    "observacionesEjecucion": "Tareas completadas exitosamente.",
     "estado": "COMPLETADA",
+    "fechaCancelacion": null,
+    "motivoCancelacion": null,
     "fallasReportadas": [
       {
-        "causas": "El toner no se mueve",
-        "accionesTomadas": "Revisar engranajes"
+        "causas": "Desgaste normal.",
+        "accionesTomadas": "Lubricación aplicada."
       }
     ],
     "fallasEncontradas": [
       {
         "idFalla": 2,
-        "descripcionFalla": "Fallo en el motor",
-        "causas": "Fallo mecánico interno",
-        "accionesTomadas": "Reemplazar pieza dañada"
+        "descripcionFalla": "Separación de las capas de la banda", 
+        "causas": "Tensión excesiva.",
+        "accionesTomadas": "Reemplazo de la banda."
+      }
+    ],
+    "tareas": [
+      {
+        "id": 1,
+        "descripcion": "Limpieza general del equipo"
+      },
+      {
+        "id": 2,
+        "descripcion": "Verificación de niveles de lubricación"
+      }
+    ]
+  },
+  {
+    "tipo": "preventiva",
+    "id": 102,
+    "idEquipo": 1,
+    "idFase": 1,
+    "fechaOrden": "2025-06-01",
+    "fechaEjecucion": "2025-06-15",
+    "observaciones": "Mantenimiento preventivo semestral.",
+    "fechaInicioReal": null,
+    "fechaFinReal": null,
+    "horasTrabajo": 0.0,
+    "costoManoObra": 0,
+    "costoMateriales": 0,
+    "observacionesEjecucion": null,
+    "estado": "PENDIENTE",
+    "fechaCancelacion": null,
+    "motivoCancelacion": null,
+    "fallasReportadas": [],
+    "fallasEncontradas": [],
+    "tareas": [
+      {
+        "id": 3,
+        "descripcion": "Revisión de cintas transportadoras"
+      },
+      {
+        "id": 4,
+        "descripcion": "Calibración de sensores"
+      }
+    ]
+  },
+  {
+    "tipo": "correctiva",
+    "id": 201,
+    "idEquipo": 8,
+    "fechaOrden": "2025-02-20",
+    "fechaEjecucion": "2025-02-25",
+    "observaciones": "La unidad no enfriaba adecuadamente.",
+    "fechaInicioReal": "2025-02-25",
+    "fechaFinReal": "2025-02-26",
+    "horasTrabajo": 6.0,
+    "costoManoObra": 300,
+    "costoMateriales": 150,
+    "observacionesEjecucion": "Reparado compresor. Reemplazado refrigerante.",
+    "estado": "COMPLETADA",
+    "fechaCancelacion": null,
+    "motivoCancelacion": null,
+    "fallasReportadas": [
+      {
+        "causas": "Usuario reportó bajo rendimiento.",
+        "accionesTomadas": "Revisar sistema."
+      }
+    ],
+    "fallasEncontradas": [
+      {
+        "idFalla": 4,
+        "descripcionFalla": "Fallo en el sistema de refrigeración",
+        "causas": "Fuga de refrigerante.",
+        "accionesTomadas": "Reparación de fuga y recarga."
+      }
+    ]
+  },
+  {
+    "tipo": "correctiva",
+    "id": 202,
+    "idEquipo": 8,
+    "fechaOrden": "2025-04-10",
+    "fechaEjecucion": "2025-04-12",
+    "observaciones": "Alarma de sobrecalentamiento.",
+    "fechaInicioReal": "2025-04-12",
+    "fechaFinReal": "2025-04-12",
+    "horasTrabajo": 2.0,
+    "costoManoObra": 100,
+    "costoMateriales": 0,
+    "observacionesEjecucion": "Reinicio del sistema. Monitoreo activo.",
+    "estado": "COMPLETADA",
+    "fechaCancelacion": null,
+    "motivoCancelacion": null,
+    "fallasReportadas": [],
+    "fallasEncontradas": [
+      {
+        "idFalla": 5,
+        "descripcionFalla": "Sobrecalentamiento del compresor",
+        "causas": "Fallo en ventilación.",
+        "accionesTomadas": "Limpieza de ventilador."
       }
     ]
   }

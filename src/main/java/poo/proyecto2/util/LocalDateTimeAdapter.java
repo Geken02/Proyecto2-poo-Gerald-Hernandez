@@ -14,15 +14,22 @@ public class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
     @Override
     public void write(JsonWriter out, LocalDateTime value) throws IOException {
         if (value == null) {
-            out.nullValue();
+            out.nullValue(); // Si el valor es null, escribe null en el JSON
         } else {
-            out.value(formatter.format(value));
+            out.value(formatter.format(value)); // Si no es null, escribe la cadena formateada
         }
     }
 
     @Override
     public LocalDateTime read(JsonReader in) throws IOException {
-        String dateString = in.nextString();
-        return dateString == null || dateString.isEmpty() ? null : LocalDateTime.parse(dateString, formatter);
+        // Usamos peek() para ver el tipo de token sin consumirlo
+        if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+            in.nextNull(); // Consumimos el token NULL
+            return null; // Devolvemos null como LocalDateTime
+        }
+        // Si no era NULL, entonces debe ser STRING
+        String dateString = in.nextString(); // Consumimos el token STRING
+        // Parseamos la cadena a LocalDateTime
+        return dateString == null || dateString.trim().isEmpty() ? null : LocalDateTime.parse(dateString, formatter);
     }
 }

@@ -28,52 +28,73 @@ public class SistemaPrincipal {
     private static final String RUTA_ORDENES = "datos/ME_Ordenes.json";
 
     public SistemaPrincipal() {
-        bosque = new ArrayList<>();
-        programasMantenimiento = new HashMap<>();
-        tareasMaestras = new HashMap<>();
-        fallasMaestras = new HashMap<>();
-        listaOrdenes = new ArrayList<>();
+    bosque = new ArrayList<>();
+    programasMantenimiento = new HashMap<>();
+    tareasMaestras = new HashMap<>();
+    fallasMaestras = new HashMap<>();
+    listaOrdenes = new ArrayList<>();
 
-        try {
-            new java.io.File("datos").mkdirs();
+    try {
+        new java.io.File("datos").mkdirs();
 
-            // Cargar con métodos genéricos de JsonUtils
-            Type tipoArboles = new TypeToken<List<Equipos>>(){}.getType();
-            bosque = JsonUtils.cargarListaGenerico(RUTA_EQUIPOS, tipoArboles);
-            siguienteIdEquipo = calcularSiguienteIdEquipo();
+        // Cargar con métodos genéricos de JsonUtils
+        Type tipoArboles = new TypeToken<List<Equipos>>(){}.getType(); // Asegúrate de usar EquipoArbol
+        bosque = JsonUtils.cargarListaGenerico(RUTA_EQUIPOS, tipoArboles);
+        siguienteIdEquipo = calcularSiguienteIdEquipo();
 
-            Type tipoProgramas = new TypeToken<List<ProgramaMantenimientoPreventivo>>(){}.getType();
-            List<ProgramaMantenimientoPreventivo> programas = JsonUtils.cargarListaGenerico(RUTA_PROGRAMAS, tipoProgramas);
-            for (ProgramaMantenimientoPreventivo p : programas) {
-                programasMantenimiento.put(p.getIdEquipo(), p);
-            }
-
-            Type tipoTareas = new TypeToken<List<TareaMantenimiento>>(){}.getType();
-            List<TareaMantenimiento> tareas = JsonUtils.cargarListaGenerico(RUTA_TAREAS, tipoTareas);
-            for (TareaMantenimiento t : tareas) {
-                tareasMaestras.put(t.getId(), t);
-            }
-            siguienteIdTarea = calcularSiguienteIdTarea();
-
-            Type tipoFallas = new TypeToken<List<FallaEquipo>>(){}.getType();
-            List<FallaEquipo> fallas = JsonUtils.cargarListaGenerico(RUTA_FALLAS, tipoFallas);
-            for (FallaEquipo f : fallas) {
-                fallasMaestras.put(f.getId(), f);
-            }
-            siguienteIdFalla = calcularSiguienteIdFalla();
-
-            Type tipoOrdenes = new TypeToken<List<OrdenTrabajo>>(){}.getType();
-            listaOrdenes = JsonUtils.cargarListaConHerencia(RUTA_ORDENES, tipoOrdenes); // Usa el Gson con herencia
-            siguienteIdOrden = calcularSiguienteIdOrden();
-
-        } catch (IOException e) {
-            siguienteIdEquipo = 1;
-            siguienteIdTarea = 1;
-            siguienteIdFalla = 1;
-            siguienteIdOrden = 1;
+        Type tipoProgramas = new TypeToken<List<ProgramaMantenimientoPreventivo>>(){}.getType();
+        List<ProgramaMantenimientoPreventivo> programas = JsonUtils.cargarListaGenerico(RUTA_PROGRAMAS, tipoProgramas);
+        System.out.println("DEBUG SP: Cargados " + programas.size() + " programas desde JSON.");
+        for (ProgramaMantenimientoPreventivo p : programas) {
+            System.out.println("DEBUG SP: Procesando programa con idEquipo (antes de put): " + p.getIdEquipo() + ", toString: " + p);
+            programasMantenimiento.put(p.getIdEquipo(), p);
         }
+        Type tipoTareas = new TypeToken<List<TareaMantenimiento>>(){}.getType(); // Asegúrate de usar TareaMantenimientoMaestra
+        List<TareaMantenimiento> tareas = JsonUtils.cargarListaGenerico(RUTA_TAREAS, tipoTareas);
+        for (TareaMantenimiento t : tareas) {
+            tareasMaestras.put(t.getId(), t); // Asocia por id
+        }
+        siguienteIdTarea = calcularSiguienteIdTarea();
+
+        Type tipoFallas = new TypeToken<List<FallaEquipo>>(){}.getType();
+        List<FallaEquipo> fallas = JsonUtils.cargarListaGenerico(RUTA_FALLAS, tipoFallas);
+        for (FallaEquipo f : fallas) {
+            fallasMaestras.put(f.getId(), f); // Asocia por id
+        }
+        siguienteIdFalla = calcularSiguienteIdFalla();
+
+        Type tipoOrdenes = new TypeToken<List<OrdenTrabajo>>(){}.getType();
+        listaOrdenes = JsonUtils.cargarListaConHerencia(RUTA_ORDENES, tipoOrdenes); // Usa el Gson con herencia
+        siguienteIdOrden = calcularSiguienteIdOrden();
+
+    } catch (IOException e) {
+        siguienteIdEquipo = 1;
+        siguienteIdTarea = 1;
+        siguienteIdFalla = 1;
+        siguienteIdOrden = 1;
     }
 
+    // --- MENSAJES DE DEPURACIÓN AL FINAL DEL CONSTRUCTOR ---
+    System.out.println("DEBUG SP: Carga inicial completada.");
+    System.out.println("DEBUG SP: Numero de árboles de equipos: " + bosque.size());
+    System.out.println("DEBUG SP: Numero de programas de mantenimiento: " + programasMantenimiento.size());
+    System.out.println("DEBUG SP: Numero de tareas maestras: " + tareasMaestras.size());
+    System.out.println("DEBUG SP: Numero de fallas maestras: " + fallasMaestras.size());
+    System.out.println("DEBUG SP: Numero de órdenes de trabajo: " + listaOrdenes.size());
+
+    // Opcional: Imprimir IDs de los programas cargados
+    System.out.println("DEBUG SP: IDs de equipos con programa:");
+    for (Integer id : programasMantenimiento.keySet()) {
+        System.out.println("  - " + id);
+    }
+
+    // Opcional: Imprimir IDs de las órdenes cargadas
+    System.out.println("DEBUG SP: IDs de órdenes de trabajo:");
+    for (OrdenTrabajo orden : listaOrdenes) {
+        System.out.println("  - ID: " + orden.getId() + ", Equipo: " + orden.getIdEquipo() + ", Tipo: " + (orden instanceof OrdenTrabajoPreventiva ? "Preventiva" : "Correctiva"));
+    }
+    // ---
+}
     // --- MÉTODOS PRIVADOS DE APOYO ---
     private int calcularSiguienteIdEquipo() {
         int max = 0;

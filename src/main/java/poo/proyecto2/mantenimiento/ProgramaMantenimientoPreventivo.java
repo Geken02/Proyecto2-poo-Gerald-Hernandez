@@ -1,14 +1,21 @@
 package poo.proyecto2.mantenimiento;
 
+import com.google.gson.annotations.Expose;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProgramaMantenimientoPreventivo {
-    private int idEquipo;
-    private List<FaseMantenimiento> fases;
+    @Expose private int idEquipo; // <-- Añadido @Expose
+    @Expose private List<FaseMantenimiento> fases; // <-- Añadido @Expose
 
+    // Constructor que recibe idEquipo
     public ProgramaMantenimientoPreventivo(int idEquipo) {
         this.idEquipo = idEquipo;
+        this.fases = new ArrayList<>();
+    }
+
+    // Constructor vacío necesario para Gson
+    public ProgramaMantenimientoPreventivo() {
         this.fases = new ArrayList<>();
     }
 

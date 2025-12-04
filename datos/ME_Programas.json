@@ -1,1 +1,52 @@
-[]
+[
+  {
+    "idEquipo": 1,
+    "fases": [
+      {
+        "tipoFrecuencia": "MES",
+        "medidorFrecuencia": 3,
+        "cantidadCiclos": 0,
+        "idsTareasMaestras": [1, 2],
+        "partes": "Lubricantes, filtros",
+        "herramientas": "Llaves, multímetro",
+        "personal": "Técnico Mecánico, Técnico Eléctrico",
+        "horasEstimadas": 4.0
+      },
+      {
+        "tipoFrecuencia": "MES",
+        "medidorFrecuencia": 6,
+        "cantidadCiclos": 0,
+        "idsTareasMaestras": [3, 4],
+        "partes": "Correas, sellos",
+        "herramientas": "Llaves, gatos hidráulicos",
+        "personal": "Técnico Mecánico",
+        "horasEstimadas": 8.0
+      }
+    ]
+  },
+  {
+    "idEquipo": 8,
+    "fases": [
+      {
+        "tipoFrecuencia": "MES",
+        "medidorFrecuencia": 1,
+        "cantidadCiclos": 0,
+        "idsTareasMaestras": [5],
+        "partes": "Filtro de aire",
+        "herramientas": "Destornillador",
+        "personal": "Técnico de Mantenimiento",
+        "horasEstimadas": 1.0
+      },
+      {
+        "tipoFrecuencia": "ANO",
+        "medidorFrecuencia": 1,
+        "cantidadCiclos": 0,
+        "idsTareasMaestras": [6],
+        "partes": "Gas refrigerante",
+        "herramientas": "Manifold, detector de fugas",
+        "personal": "Técnico Refrigeración",
+        "horasEstimadas": 16.0
+      }
+    ]
+  }
+]

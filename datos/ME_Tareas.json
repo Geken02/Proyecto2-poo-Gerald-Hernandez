@@ -1,10 +1,30 @@
 [
   {
     "id": 1,
-    "descripcion": "Limpieza de ventiladores"
+    "descripcion": "Limpieza general del equipo"
   },
   {
     "id": 2,
-    "descripcion": "Verificación de voltajes"
+    "descripcion": "Verificación de niveles de lubricación"
+  },
+  {
+    "id": 3,
+    "descripcion": "Revisión de cintas transportadoras"
+  },
+  {
+    "id": 4,
+    "descripcion": "Calibración de sensores"
+  },
+  {
+    "id": 5,
+    "descripcion": "Revisión y limpieza de filtros"
+  },
+  {
+    "id": 6,
+    "descripcion": "Revisión de presión de refrigerante"
+  },
+  {
+    "id": 7,
+    "descripcion": "Inspección de bandas de transmisión"
   }
 ]

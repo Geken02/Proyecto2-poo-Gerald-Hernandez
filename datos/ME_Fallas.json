@@ -5,6 +5,18 @@
   },
   {
     "id": 2,
+    "descripcion": "Separación de las capas de la banda"
+  },
+  {
+    "id": 3,
     "descripcion": "Fallo en el motor"
+  },
+  {
+    "id": 4,
+    "descripcion": "Fallo en el sistema de refrigeración"
+  },
+  {
+    "id": 5,
+    "descripcion": "Sobrecalentamiento del compresor"
   }
 ]

@@ -22,4 +22,10 @@ public class OrdenTrabajoPreventiva extends OrdenTrabajo {
     public void agregarTarea(TareaMantenimiento tarea) {
         tareas.add(tarea);
     }
+    // ... (otros métodos) ...
+
+    @Override
+    public String toString() {
+        return "Orden #" + getId() + " - " + getEstado(); // Ejemplo: "Orden #123 - Pendiente"
+    }
 }

@@ -41,17 +41,10 @@ public class FaseMantenimiento {
         idsTareasMaestras.add(idTarea);
     }
 
+    // ... (otros métodos) ...
+
     @Override
     public String toString() {
-        return "FaseMantenimiento{" +
-                "tipoFrecuencia=" + tipoFrecuencia +
-                ", medidorFrecuencia=" + medidorFrecuencia +
-                ", cantidadCiclos=" + cantidadCiclos +
-                ", idsTareasMaestras=" + idsTareasMaestras +
-                ", partes='" + partes + '\'' +
-                ", herramientas='" + herramientas + '\'' +
-                ", personal='" + personal + '\'' +
-                ", horasEstimadas=" + horasEstimadas +
-                '}';
+        return "Fase: " + tipoFrecuencia + " cada " + medidorFrecuencia + " " + tipoFrecuencia;
     }
 }

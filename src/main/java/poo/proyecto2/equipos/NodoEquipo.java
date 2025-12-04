@@ -92,4 +92,11 @@ public class NodoEquipo {
     public void setMesesVidaUtil(int mesesVidaUtil) { this.mesesVidaUtil = mesesVidaUtil; }
     public void setEstado(EstadoEquipo estado) { this.estado = estado; }
     public void setCostoInicial(double costoInicial) { this.costoInicial = costoInicial; }
+
+  
+
+    @Override
+    public String toString() {
+        return id + " " + descripcion; // Muestra ID y Descripción
+    }
 }

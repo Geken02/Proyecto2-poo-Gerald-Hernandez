@@ -164,17 +164,25 @@ public class VentanaMenuPrincipal extends JFrame {
 
     private void configurarEventos() {
         // --- Eventos de Menú ---
-        menuItemVerEquipos.addActionListener(e -> {
-            // TODO: Abrir ventana de ver/editar equipos
-            lblEstado.setText("Acción: Ver/Editar Equipos");
-            JOptionPane.showMessageDialog(this, "Funcionalidad pendiente: Ver/Editar Equipos", "Info", JOptionPane.INFORMATION_MESSAGE);
-        });
+        // En VentanaMenuPrincipal.java, dentro de configurarEventos(), en el ActionListener de menuItemVerEquipos o un nuevo menuItem
+menuItemVerEquipos.addActionListener(e -> {
+    // lblEstado.setText("Acción: Consulta de Mantenimiento"); // Opcional
+    // JOptionPane.showMessageDialog(this, "Funcionalidad pendiente: Consulta de Mantenimiento", "Info", JOptionPane.INFORMATION_MESSAGE); // QUITAR ESTO
+
+    // CREAR Y MOSTRAR LA NUEVA VENTANA DE CONSULTA
+    VentanaConsultarEquipo ventanaConsulta = new VentanaConsultarEquipo(sistema, this); // Pasa la instancia de sistema y la ventana padre
+    ventanaConsulta.setVisible(true);
+});
 
         menuItemAgregarEquipo.addActionListener(e -> {
-            // TODO: Abrir ventana de agregar equipo
-            lblEstado.setText("Acción: Agregar Equipo");
-            JOptionPane.showMessageDialog(this, "Funcionalidad pendiente: Agregar Equipo", "Info", JOptionPane.INFORMATION_MESSAGE);
-        });
+        // lblEstado.setText("Acción: Agregar Equipo"); // Opcional: Actualizar estado
+
+        // CREAR Y MOSTRAR LA VENTANA DE REGISTRO
+        // Se pasa la instancia de 'sistema' y 'this' (la ventana principal) a la nueva ventana
+        VentanaRegistrarEquipo ventanaReg = new VentanaRegistrarEquipo(sistema, this);
+        ventanaReg.setVisible(true); // Hace visible la nueva ventana
+        // Opcional: ventanaReg.setLocationRelativeTo(this); // Asegura que se centre en la ventana padre si no lo hace automáticamente
+    });
 
         menuItemVerArbolEquipo.addActionListener(e -> {
             // TODO: Abrir ventana de ver árbol
