@@ -41,8 +41,6 @@ public class FaseMantenimiento {
         idsTareasMaestras.add(idTarea);
     }
 
-    // ... (otros métodos) ...
-
     @Override
     public String toString() {
         return "Fase: " + tipoFrecuencia + " cada " + medidorFrecuencia + " " + tipoFrecuencia;

@@ -120,7 +120,52 @@ public abstract class OrdenTrabajo {
     // --- Getters para las nuevas listas ---
     public List<FallaReportada> getFallasReportadas() { return new ArrayList<>(fallasReportadas); }
     public List<FallaEncontrada> getFallasEncontradas() { return new ArrayList<>(fallasEncontradas); }
-    // ---
+
+
+    public void setFallasEncontradas(List<FallaEncontrada> nuevasFallas) {
+        this.fallasEncontradas = nuevasFallas != null ? nuevasFallas : new ArrayList<>();
+    }
+    public void setEstado(EstadoOrden estado)
+    {
+        this.estado = estado;
+    }
+
+    public void setFechaInicioReal(LocalDate fechaInicioReal) {
+        this.fechaInicioReal = fechaInicioReal;
+    }
+
+    public void setFechaFinReal(LocalDate fechaFinReal) {
+        this.fechaFinReal = fechaFinReal;
+    }
+
+    public void setHorasTrabajo(float horasTrabajo) {
+        this.horasTrabajo = horasTrabajo;
+    }
+
+    public void setCostoManoObra(int costoManoObra) {
+        this.costoManoObra = costoManoObra;
+    }
+
+    public void setCostoMateriales(int costoMateriales) {
+        this.costoMateriales = costoMateriales;
+    }
+
+    public void setObservacionesEjecucion(String observacionesEjecucion) {
+        this.observacionesEjecucion = observacionesEjecucion;
+    }
+
+    public void setFechaCancelacion(LocalDate fechaCancelacion) {
+        this.fechaCancelacion = fechaCancelacion;
+    }
+
+    public void setMotivoCancelacion(String motivoCancelacion) {
+        this.motivoCancelacion = motivoCancelacion;
+    }
+
+    // --- Setter para la lista de fallas reportadas (por si acaso) ---
+    public void setFallasReportadas(List<FallaReportada> nuevasFallas) {
+        this.fallasReportadas = nuevasFallas != null ? nuevasFallas : new ArrayList<>();
+    }
 
 
     // Setters para observaciones

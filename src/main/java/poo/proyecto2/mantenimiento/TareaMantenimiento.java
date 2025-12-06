@@ -17,9 +17,7 @@ public class TareaMantenimiento {
 
     @Override
     public String toString() {
-        return "TareaMantenimientoMaestra{" +
-                "id=" + id +
-                ", descripcion='" + descripcion + '\'' +
-                '}';
+        return id + " - " + descripcion; // Mostrar ID y Descripción
+        // O solo la descripción: return descripcion;
     }
 }

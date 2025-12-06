@@ -1,6 +1,6 @@
 package poo.proyecto2;
 
-import poo.proyecto2.GUI.VentanaMenuPrincipal;
+import poo.proyecto2.gui.VentanaMenuPrincipal;
 import poo.proyecto2.equipos.*;
 import poo.proyecto2.sistema.*;
 import poo.proyecto2.mantenimiento.*;

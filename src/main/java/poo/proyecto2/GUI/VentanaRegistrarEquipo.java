@@ -1,4 +1,4 @@
-package poo.proyecto2.GUI;
+package poo.proyecto2.gui;
 
 import poo.proyecto2.EstadoEquipo;
 import poo.proyecto2.sistema.SistemaPrincipal;

@@ -1,9 +1,19 @@
 [
   {
     "tipo": "preventiva",
+    "idFase": 0,
+    "tareas": [
+      {
+        "id": 1,
+        "descripcion": "Limpieza general del equipo"
+      },
+      {
+        "id": 2,
+        "descripcion": "Verificación de niveles de lubricación"
+      }
+    ],
     "id": 101,
     "idEquipo": 1,
-    "idFase": 0,
     "fechaOrden": "2025-03-01",
     "fechaEjecucion": "2025-03-15",
     "observaciones": "Mantenimiento preventivo trimestral.",
@@ -14,8 +24,6 @@
     "costoMateriales": 50,
     "observacionesEjecucion": "Tareas completadas exitosamente.",
     "estado": "COMPLETADA",
-    "fechaCancelacion": null,
-    "motivoCancelacion": null,
     "fallasReportadas": [
       {
         "causas": "Desgaste normal.",
@@ -25,41 +33,15 @@
     "fallasEncontradas": [
       {
         "idFalla": 2,
-        "descripcionFalla": "Separación de las capas de la banda", 
+        "descripcionFalla": "Separación de las capas de la banda",
         "causas": "Tensión excesiva.",
         "accionesTomadas": "Reemplazo de la banda."
-      }
-    ],
-    "tareas": [
-      {
-        "id": 1,
-        "descripcion": "Limpieza general del equipo"
-      },
-      {
-        "id": 2,
-        "descripcion": "Verificación de niveles de lubricación"
       }
     ]
   },
   {
     "tipo": "preventiva",
-    "id": 102,
-    "idEquipo": 1,
     "idFase": 1,
-    "fechaOrden": "2025-06-01",
-    "fechaEjecucion": "2025-06-15",
-    "observaciones": "Mantenimiento preventivo semestral.",
-    "fechaInicioReal": null,
-    "fechaFinReal": null,
-    "horasTrabajo": 0.0,
-    "costoManoObra": 0,
-    "costoMateriales": 0,
-    "observacionesEjecucion": null,
-    "estado": "PENDIENTE",
-    "fechaCancelacion": null,
-    "motivoCancelacion": null,
-    "fallasReportadas": [],
-    "fallasEncontradas": [],
     "tareas": [
       {
         "id": 3,
@@ -69,12 +51,24 @@
         "id": 4,
         "descripcion": "Calibración de sensores"
       }
-    ]
+    ],
+    "id": 102,
+    "idEquipo": 1,
+    "fechaOrden": "2025-06-01",
+    "fechaEjecucion": "2025-06-10",
+    "observaciones": "Mantenimiento preventivo semestral.",
+    "fechaInicioReal": "2025-12-05",
+    "horasTrabajo": 0.0,
+    "costoManoObra": 0,
+    "costoMateriales": 0,
+    "estado": "EN_PROGRESO",
+    "fallasReportadas": [],
+    "fallasEncontradas": []
   },
   {
     "tipo": "correctiva",
     "id": 201,
-    "idEquipo": 8,
+    "idEquipo": 3,
     "fechaOrden": "2025-02-20",
     "fechaEjecucion": "2025-02-25",
     "observaciones": "La unidad no enfriaba adecuadamente.",
@@ -85,8 +79,6 @@
     "costoMateriales": 150,
     "observacionesEjecucion": "Reparado compresor. Reemplazado refrigerante.",
     "estado": "COMPLETADA",
-    "fechaCancelacion": null,
-    "motivoCancelacion": null,
     "fallasReportadas": [
       {
         "causas": "Usuario reportó bajo rendimiento.",
@@ -105,10 +97,10 @@
   {
     "tipo": "correctiva",
     "id": 202,
-    "idEquipo": 8,
+    "idEquipo": 1,
     "fechaOrden": "2025-04-10",
     "fechaEjecucion": "2025-04-12",
-    "observaciones": "Alarma de sobrecalentamiento.",
+    "observaciones": "Parada imprevista de la línea.",
     "fechaInicioReal": "2025-04-12",
     "fechaFinReal": "2025-04-12",
     "horasTrabajo": 2.0,
@@ -116,16 +108,54 @@
     "costoMateriales": 0,
     "observacionesEjecucion": "Reinicio del sistema. Monitoreo activo.",
     "estado": "COMPLETADA",
-    "fechaCancelacion": null,
-    "motivoCancelacion": null,
     "fallasReportadas": [],
     "fallasEncontradas": [
       {
-        "idFalla": 5,
-        "descripcionFalla": "Sobrecalentamiento del compresor",
-        "causas": "Fallo en ventilación.",
-        "accionesTomadas": "Limpieza de ventilador."
+        "idFalla": 3,
+        "descripcionFalla": "Fallo en el motor",
+        "causas": "Sobrecarga temporal.",
+        "accionesTomadas": "Verificación de circuito y reinicio."
       }
     ]
+  },
+  {
+    "tipo": "preventiva",
+    "idFase": 0,
+    "tareas": [],
+    "id": 203,
+    "idEquipo": 20,
+    "fechaOrden": "2025-12-05",
+    "fechaEjecucion": "2026-12-04",
+    "fechaInicioReal": "2025-12-05",
+    "fechaFinReal": "2025-12-05",
+    "horasTrabajo": 2.0,
+    "costoManoObra": 10,
+    "costoMateriales": 20,
+    "observacionesEjecucion": "",
+    "estado": "COMPLETADA",
+    "fallasReportadas": [],
+    "fallasEncontradas": [
+      {
+        "idFalla": 1,
+        "descripcionFalla": "Cortes en la banda",
+        "causas": "Bandas desgatadas",
+        "accionesTomadas": "Cambio de bandas"
+      }
+    ]
+  },
+  {
+    "tipo": "preventiva",
+    "idFase": 0,
+    "tareas": [],
+    "id": 204,
+    "idEquipo": 21,
+    "fechaOrden": "2025-12-05",
+    "fechaEjecucion": "2026-02-04",
+    "horasTrabajo": 0.0,
+    "costoManoObra": 0,
+    "costoMateriales": 0,
+    "estado": "PENDIENTE",
+    "fallasReportadas": [],
+    "fallasEncontradas": []
   }
 ]
