@@ -93,10 +93,12 @@
     "idEquipo": 10,
     "fases": [
       {
-        "tipoFrecuencia": "DIA",
-        "medidorFrecuencia": 1,
+        "tipoFrecuencia": "SEMANA",
+        "medidorFrecuencia": 2,
         "cantidadCiclos": 0,
-        "idsTareasMaestras": [],
+        "idsTareasMaestras": [
+          3
+        ],
         "partes": "aashhgashasn",
         "herramientas": "asnjhashbas",
         "personal": "asnasnsahn",

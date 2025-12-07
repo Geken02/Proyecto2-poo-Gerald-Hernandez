@@ -1,9 +1,10 @@
 package poo.proyecto2.gui;
 
 import poo.proyecto2.equipos.NodoEquipo;
-import poo.proyecto2.mantenimiento.*; // Import crucial para tipos de mantenimiento
+import poo.proyecto2.mantenimiento.*;
 import poo.proyecto2.sistema.SistemaPrincipal;
 import poo.proyecto2.gui.vistas.*;
+import poo.proyecto2.reportes.*;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -12,8 +13,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors; // Import crucial para stream().collect()
+import java.util.stream.Collectors;
 
+/**
+ * Ventana principal del sistema de mantenimiento de equipos.
+ * Proporciona acceso a todas las funcionalidades del sistema a través de un menú
+ * y una vista jerárquica de los equipos y su información de mantenimiento.
+ */
 public class VentanaMenuPrincipal extends JFrame {
 
     private SistemaPrincipal sistema;
@@ -34,19 +40,18 @@ public class VentanaMenuPrincipal extends JFrame {
     private JMenuItem menuItemVisualizarTareas;
 
     private JMenu submenuOrdenesPrev;
-    private JMenuItem menuItemGeneracionOrdenes;
-    private JMenuItem menuItemDatosInicio;
-    private JMenuItem menuItemDatosFin;
-    private JMenuItem menuItemCancelacionOrdenes;
+    private JMenuItem menuItemDatosInicio; // Iniciar Órdenes
+    private JMenuItem menuItemDatosFin;   // Finalizar Órdenes
+    private JMenuItem menuItemCancelacionOrdenes; // Cancelar Órdenes
 
     private JMenu submenuFallas;
     private JMenuItem menuItemRegistroFallas;
 
     private JMenu submenuOrdenesCorr;
     private JMenuItem menuItemRegistroOrdenCorr;
-    private JMenuItem menuItemDatosInicioCorr;
-    private JMenuItem menuItemDatosFinCorr;
-    private JMenuItem menuItemCancelacionOrdenCorr;
+    private JMenuItem menuItemDatosInicioCorr; // Iniciar Órdenes Correctivas
+    private JMenuItem menuItemDatosFinCorr;   // Finalizar Órdenes Correctivas
+    private JMenuItem menuItemCancelacionOrdenCorr; // Cancelar Órdenes Correctivas
 
     // Submenús de Reportes
     private JMenuItem menuItemRepInventario;
@@ -55,13 +60,12 @@ public class VentanaMenuPrincipal extends JFrame {
 
     // Submenús de Gráficos
     private JMenuItem menuItemGrafico1;
-    private JMenuItem menuItemGrafico2;
+    // private JMenuItem menuItemGrafico2; // Eliminado
 
     // Componentes de búsqueda y árbol
     private JLabel lblBuscarPor;
     private JTextField txtBuscarEquipo;
     private JButton btnBuscar;
-
     private JSplitPane splitPanePrincipal;
     private JScrollPane scrollArbol;
     private JTree arbolNavegacion;
@@ -79,6 +83,10 @@ public class VentanaMenuPrincipal extends JFrame {
     // Referencia al nodo raíz buscado
     private NodoEquipo nodoRaizBuscado = null;
 
+    /**
+     * Constructor de la ventana principal.
+     * @param sistema Instancia del SistemaPrincipal que gestiona los datos.
+     */
     public VentanaMenuPrincipal(SistemaPrincipal sistema) {
         this.sistema = sistema;
         inicializarComponentes();
@@ -90,6 +98,9 @@ public class VentanaMenuPrincipal extends JFrame {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Inicializa todos los componentes de la interfaz gráfica.
+     */
     private void inicializarComponentes() {
         setLayout(new BorderLayout());
 
@@ -121,11 +132,11 @@ public class VentanaMenuPrincipal extends JFrame {
         submenuProgramaPrev.add(menuItemVisualizarTareas);
 
         submenuOrdenesPrev = new JMenu("Órdenes de trabajo para el mantenimiento preventivo");
-        menuItemGeneracionOrdenes = new JMenuItem("Generación de órdenes");
-        menuItemDatosInicio = new JMenuItem("Registrar Datos cuando inicia la orden");
-        menuItemDatosFin = new JMenuItem("Finalizacion de la orden");
+        // menuItemGeneracionOrdenes = new JMenuItem("Generación de órdenes"); // Eliminado
+        menuItemDatosInicio = new JMenuItem("Registrar Datos cuando inicia la orden"); // Renombrado para claridad
+        menuItemDatosFin = new JMenuItem("Finalizacion de la orden"); // Renombrado para claridad
         menuItemCancelacionOrdenes = new JMenuItem("Cancelación de órdenes");
-        submenuOrdenesPrev.add(menuItemGeneracionOrdenes);
+        // submenuOrdenesPrev.add(menuItemGeneracionOrdenes); // Eliminado
         submenuOrdenesPrev.add(menuItemDatosInicio);
         submenuOrdenesPrev.add(menuItemDatosFin);
         submenuOrdenesPrev.addSeparator(); // Separador antes de cancelación
@@ -157,17 +168,15 @@ public class VentanaMenuPrincipal extends JFrame {
         menuItemRepInventario = new JMenuItem("Reporte del inventario de equipos");
         menuItemRepOperaciones = new JMenuItem("Reporte de operaciones de mantenimiento");
         menuItemRepOrdenes = new JMenuItem("Reporte de órdenes de trabajo");
-
         menuReportes.add(menuItemRepInventario);
         menuReportes.add(menuItemRepOperaciones);
         menuReportes.add(menuItemRepOrdenes);
 
         // --- Submenús de Gráficos ---
-        menuItemGrafico1 = new JMenuItem("Gráfico 1 (Ej: Órdenes por Estado)");
-        menuItemGrafico2 = new JMenuItem("Gráfico 2 (Ej: Costos por Equipo)");
-
+        menuItemGrafico1 = new JMenuItem("Gráfico de Análisis (Ej: Órdenes por Estado)");
+        // menuItemGrafico2 = new JMenuItem("Gráfico 2 (Ej: Costos por Equipo)"); // Eliminado
         menuGraficos.add(menuItemGrafico1);
-        menuGraficos.add(menuItemGrafico2);
+        // menuGraficos.add(menuItemGrafico2); // Eliminado
 
         // Añadir menús principales a la barra
         menuBar.add(menuMantenimiento);
@@ -228,6 +237,9 @@ public class VentanaMenuPrincipal extends JFrame {
         add(panelInferior, BorderLayout.SOUTH);
     }
 
+    /**
+     * Configura todos los eventos de los componentes de la interfaz.
+     */
     private void configurarEventos() {
         // --- Eventos de Menú ---
         menuItemRegistroEquipo.addActionListener(e -> {
@@ -253,10 +265,10 @@ public class VentanaMenuPrincipal extends JFrame {
             if (!criterio.isEmpty()) {
                 try {
                     int idEquipo = Integer.parseInt(criterio);
-                    System.out.println("DEBUG: Buscando equipo con ID: " + idEquipo); // DEBUG
+                    // System.out.println("DEBUG: Buscando equipo con ID: " + idEquipo); // DEBUG - ELIMINADO
                     NodoEquipo equipoRaiz = sistema.buscarEquipoPorId(idEquipo);
                     if (equipoRaiz != null) {
-                        System.out.println("DEBUG: Equipo encontrado: " + equipoRaiz.getId() + " - " + equipoRaiz.getDescripcion()); // DEBUG
+                        // System.out.println("DEBUG: Equipo encontrado: " + equipoRaiz.getId() + " - " + equipoRaiz.getDescripcion()); // DEBUG - ELIMINADO
                         // Guardar la referencia al nodo raíz buscado
                         nodoRaizBuscado = equipoRaiz;
                         // Carga el árbol con el equipo encontrado y sus nodos dependientes inmediatos
@@ -266,11 +278,11 @@ public class VentanaMenuPrincipal extends JFrame {
                         // Limpia la selección visual del árbol (opcional, para que no aparezca seleccionado)
                         arbolNavegacion.clearSelection();
                     } else {
-                        System.out.println("DEBUG: Equipo con ID " + idEquipo + " NO encontrado en el sistema."); // DEBUG
+                        // System.out.println("DEBUG: Equipo con ID " + idEquipo + " NO encontrado en el sistema."); // DEBUG - ELIMINADO
                         JOptionPane.showMessageDialog(this, "Equipo con ID " + idEquipo + " no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (NumberFormatException ex) {
-                    System.out.println("DEBUG: Error de formato en el ID: " + ex.getMessage()); // DEBUG
+                    // System.out.println("DEBUG: Error de formato en el ID: " + ex.getMessage()); // DEBUG - ELIMINADO
                     JOptionPane.showMessageDialog(this, "Por favor, ingrese un ID de equipo válido (número entero).", "Error de Validación", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
@@ -283,15 +295,15 @@ public class VentanaMenuPrincipal extends JFrame {
             DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) arbolNavegacion.getLastSelectedPathComponent();
             if (nodoSeleccionado != null) {
                 Object objeto = nodoSeleccionado.getUserObject(); // El objeto real asociado al nodo
-                System.out.println("DEBUG: Nodo seleccionado en el árbol: " + objeto); // DEBUG
+                // System.out.println("DEBUG: Nodo seleccionado en el árbol: " + objeto); // DEBUG - ELIMINADO
 
                 // Verificar si el nodo seleccionado es el nodo raíz buscado
                 if (objeto instanceof NodoEquipo && nodoRaizBuscado != null && ((NodoEquipo) objeto).getId() == nodoRaizBuscado.getId()) {
-                    System.out.println("DEBUG: Nodo seleccionado es el nodo raíz buscado. No actualizamos detalle, expandimos si es necesario."); // DEBUG
+                    // System.out.println("DEBUG: Nodo seleccionado es el nodo raíz buscado. No actualizamos detalle, expandimos si es necesario."); // DEBUG - ELIMINADO
                     // Si es el nodo raíz, no actualizamos el panel derecho (la info ya está mostrada)
                     // Solo expandimos el nodo si es necesario
                     if (nodoSeleccionado.getChildCount() == 0) {
-                        System.out.println("DEBUG: Nodo raíz no tiene hijos en el árbol. Recargando nodos inmediatos..."); // DEBUG
+                        // System.out.println("DEBUG: Nodo raíz no tiene hijos en el árbol. Recargando nodos inmediatos..."); // DEBUG - ELIMINADO
                         // Recargar los nodos inmediatos para expandir
                         DefaultTreeModel model = (DefaultTreeModel) arbolNavegacion.getModel();
                         DefaultMutableTreeNode rootTreeNode = (DefaultMutableTreeNode) model.getRoot();
@@ -299,7 +311,7 @@ public class VentanaMenuPrincipal extends JFrame {
                         model.reload(rootTreeNode); // Recarga el modelo para reflejar los cambios
                         // Expandir el nodo raíz
                         arbolNavegacion.expandRow(0);
-                        System.out.println("DEBUG: Nodo raíz recargado y expandido."); // DEBUG
+                        // System.out.println("DEBUG: Nodo raíz recargado y expandido."); // DEBUG - ELIMINADO
                     }
                     // Importante: No llamamos a mostrarDetalleNodo aquí para que no se sobrescriba la info del nodo raíz
                     return; // Salir del evento para no actualizar el detalle
@@ -314,7 +326,7 @@ public class VentanaMenuPrincipal extends JFrame {
                     // Verificar si el nodo tiene hijos en el modelo del árbol
                     DefaultMutableTreeNode nodo = (DefaultMutableTreeNode) arbolNavegacion.getLastSelectedPathComponent();
                     if (nodo.getChildCount() == 0) {
-                        System.out.println("DEBUG: Nodo equipo no tiene hijos en el árbol. Añadiendo hijos directos y nodos de mantenimiento..."); // DEBUG
+                        // System.out.println("DEBUG: Nodo equipo no tiene hijos en el árbol. Añadiendo hijos directos y nodos de mantenimiento..."); // DEBUG - ELIMINADO
                         // Añadir los hijos directos y nodos de mantenimiento a este nodo
                         agregarHijosYMantenimiento(nodo, equipo);
                         // Expandir el nodo
@@ -322,7 +334,7 @@ public class VentanaMenuPrincipal extends JFrame {
                         if (path != null) {
                             arbolNavegacion.expandPath(path);
                         }
-                        System.out.println("DEBUG: Hijos directos y nodos de mantenimiento añadidos y nodo expandido."); // DEBUG
+                        // System.out.println("DEBUG: Hijos directos y nodos de mantenimiento añadidos y nodo expandido."); // DEBUG - ELIMINADO
                     }
                 }
             }
@@ -333,22 +345,60 @@ public class VentanaMenuPrincipal extends JFrame {
             DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) arbolNavegacion.getLastSelectedPathComponent();
             if (nodoSeleccionado != null) {
                 Object objeto = nodoSeleccionado.getUserObject();
-
                 if (objeto instanceof NodoEquipo) {
                     NodoEquipo equipo = (NodoEquipo) objeto;
-                    // TODO: Abrir ventana de edición para el equipo
-                    // Ejemplo:
-                    // VentanaEditarEquipo ventanaEdit = new VentanaEditarEquipo(sistema, this, equipo);
-                    // ventanaEdit.setVisible(true);
-                    JOptionPane.showMessageDialog(this, "Funcionalidad pendiente: Editar Equipo ID " + equipo.getId(), "Info", JOptionPane.INFORMATION_MESSAGE);
+                    VentanaEditarEquipo ventanaEdit = new VentanaEditarEquipo(sistema, this, equipo);
+                    ventanaEdit.setVisible(true);
+                    cargarArbolNavegacion(nodoRaizBuscado); // <-- Recargar el árbol para reflejar cambios
+                } else if (objeto instanceof String) {
+                    String textoNodo = (String) objeto;
+                    // Verificar si el texto del nodo es "MANTENIMIENTO PREVENTIVO"
+                    if ("MANTENIMIENTO PREVENTIVO".equals(textoNodo)) {
+                        // Obtener el nodo padre del árbol, que debería ser un NodoEquipo
+                        TreeNode parent = nodoSeleccionado.getParent();
+                        if (parent instanceof DefaultMutableTreeNode) {
+                            Object objetoPadre = ((DefaultMutableTreeNode) parent).getUserObject();
+                            if (objetoPadre instanceof NodoEquipo) {
+                                int idEquipo = ((NodoEquipo) objetoPadre).getId();
+                                // Abrir VentanaEditarProgramaMantenimiento con el ID del equipo
+                                VentanaEditarProgramaMantenimiento ventanaEditProg = new VentanaEditarProgramaMantenimiento(sistema, this, idEquipo);
+                                ventanaEditProg.setVisible(true);
+                            } else {
+                                JOptionPane.showMessageDialog(this, "No se pudo determinar el equipo padre del nodo de mantenimiento.", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(this, "No se pudo determinar el nodo padre del nodo de mantenimiento.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } else if ("MANTENIMIENTO CORRECTIVO".equals(textoNodo)) {
+                        TreeNode parent = nodoSeleccionado.getParent();
+                        if (parent instanceof DefaultMutableTreeNode) {
+                            Object objetoPadre = ((DefaultMutableTreeNode) parent).getUserObject();
+                            if (objetoPadre instanceof NodoEquipo) {
+                                int idEquipo = ((NodoEquipo) objetoPadre).getId();
+                                // Ejemplo: Abrir una ventana de consulta de órdenes correctivas
+                                // VentanaConsultarOrdenesCorrectivas ventanaConsCorr = new VentanaConsultarOrdenesCorrectivas(sistema, this, idEquipo);
+                                // ventanaConsCorr.setVisible(true);
+                                JOptionPane.showMessageDialog(this, "Funcionalidad pendiente: Consultar Órdenes Correctivas para el equipo ID: " + idEquipo, "Info", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        }
+                    } else {
+                        // Otros nodos tipo String que no son mantenimiento
+                        JOptionPane.showMessageDialog(this, "No se puede modificar la información de este tipo de nodo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    }
                 } else if (objeto instanceof FaseMantenimiento) {
                     // TODO: Abrir ventana de edición para la fase (si aplica)
                     JOptionPane.showMessageDialog(this, "Funcionalidad pendiente: Editar Fase", "Info", JOptionPane.INFORMATION_MESSAGE);
-                } else if (objeto instanceof OrdenTrabajo) {
-                    // TODO: Abrir ventana de edición para la orden (iniciar, finalizar, cancelar, etc.)
-                    String tipoOrden = (objeto instanceof OrdenTrabajoPreventiva) ? "Preventiva" : "Correctiva";
+                } else if (objeto instanceof OrdenTrabajo) { // <-- Detectar cualquier tipo de OrdenTrabajo
                     OrdenTrabajo orden = (OrdenTrabajo) objeto;
-                    JOptionPane.showMessageDialog(this, "Funcionalidad pendiente: Editar Orden " + tipoOrden + " ID " + orden.getId(), "Info", JOptionPane.INFORMATION_MESSAGE);
+                    if (orden instanceof OrdenTrabajoPreventiva) { // <-- Verificar si es Preventiva
+                        // Abrir VentanaEditarOrdenPreventiva
+                        VentanaEditarOrdenPreventiva ventanaEditOrdPrev = new VentanaEditarOrdenPreventiva(sistema, this, (OrdenTrabajoPreventiva) orden);
+                        ventanaEditOrdPrev.setVisible(true);
+                    } else if (orden instanceof OrdenTrabajoCorrectiva) { // <-- Verificar si es Correctiva
+                        // Abrir VentanaEditarOrdenCorrectiva
+                        VentanaEditarOrdenCorrectiva ventanaEditOrdCorr = new VentanaEditarOrdenCorrectiva(sistema, this, (OrdenTrabajoCorrectiva) orden);
+                        ventanaEditOrdCorr.setVisible(true);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(this, "No se puede modificar la información de este tipo de nodo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                 }
@@ -357,15 +407,12 @@ public class VentanaMenuPrincipal extends JFrame {
             }
         });
 
-
-
         // --- Eventos de Catálogos ---
         menuItemVisualizarTareas.addActionListener(e -> { // <-- Añadido
             lblEstado.setText("Acción: Administrar Tareas Maestras");
             VentanaAdministrarTareas ventanaTareas = new VentanaAdministrarTareas(sistema, this);
             ventanaTareas.setVisible(true);
         });
-
 
         menuItemRegistroPrograma.addActionListener(e -> { // <-- Añadido
             lblEstado.setText("Acción: Registrar Programa de Mantenimiento");
@@ -374,9 +421,10 @@ public class VentanaMenuPrincipal extends JFrame {
         });
 
         menuItemDatosInicio.addActionListener(e -> {
-        lblEstado.setText("Acción: Iniciar Órdenes Preventivas"); // Opcional
-        VentanaIniciarOrdenPreventiva ventanaInicio = new VentanaIniciarOrdenPreventiva(sistema, this);
-        ventanaInicio.setVisible(true); });
+            lblEstado.setText("Acción: Iniciar Órdenes Preventivas"); // Opcional
+            VentanaIniciarOrdenPreventiva ventanaInicio = new VentanaIniciarOrdenPreventiva(sistema, this);
+            ventanaInicio.setVisible(true);
+        });
 
         // --- Mantenimiento -> Órdenes de trabajo para el mantenimiento preventivo -> Finalizar Órdenes ---
         menuItemDatosFin.addActionListener(e -> {
@@ -395,20 +443,19 @@ public class VentanaMenuPrincipal extends JFrame {
         });
 
         menuItemRegistroFallas.addActionListener(e -> {
-        lblEstado.setText("Acción: Administrar Fallas Maestras");
-        // Abrir VentanaAdministrarFallasMaestras
-        VentanaAdministrarFallas ventanaFallas = new VentanaAdministrarFallas(sistema, this);
-        ventanaFallas.setVisible(true);
+            lblEstado.setText("Acción: Administrar Fallas Maestras");
+            // Abrir VentanaAdministrarFallasMaestras
+            VentanaAdministrarFallas ventanaFallas = new VentanaAdministrarFallas(sistema, this);
+            ventanaFallas.setVisible(true);
         });
 
         menuItemRegistroOrdenCorr.addActionListener(e -> {
-        lblEstado.setText("Acción: Registrar Nueva Orden Correctiva"); // Opcional
-        VentanaRegistrarOrdenCorrectiva ventanaReg = new VentanaRegistrarOrdenCorrectiva(sistema, this);
-        ventanaReg.setVisible(true);
+            lblEstado.setText("Acción: Registrar Nueva Orden Correctiva"); // Opcional
+            VentanaRegistrarOrdenCorrectiva ventanaReg = new VentanaRegistrarOrdenCorrectiva(sistema, this);
+            ventanaReg.setVisible(true);
         });
 
         // --- Mantenimiento -> Órdenes Correctivas -> Iniciar Órdenes ---
-        // Asumiendo que tienes un JMenuItem como menuItemIniciarOrdenCorrectiva
         menuItemDatosInicioCorr.addActionListener(e -> {
             lblEstado.setText("Acción: Iniciar Órdenes Correctivas");
             // Abrir VentanaIniciarOrdenCorrectiva
@@ -417,7 +464,6 @@ public class VentanaMenuPrincipal extends JFrame {
         });
 
         // --- Mantenimiento -> Órdenes Correctivas -> Finalizar Órdenes ---
-        // Asumiendo que tienes un JMenuItem como menuItemFinalizarOrdenCorrectiva
         menuItemDatosFinCorr.addActionListener(e -> {
             lblEstado.setText("Acción: Finalizar Órdenes Correctivas");
             // Abrir VentanaFinalizarOrdenCorrectiva
@@ -426,7 +472,6 @@ public class VentanaMenuPrincipal extends JFrame {
         });
 
         // --- Mantenimiento -> Órdenes Correctivas -> Cancelación de órdenes ---
-        // Asumiendo que tienes un JMenuItem como menuItemCancelarOrdenCorrectiva
         menuItemCancelacionOrdenCorr.addActionListener(e -> {
             lblEstado.setText("Acción: Cancelar Órdenes Correctivas");
             // Abrir VentanaCancelarOrdenCorrectiva
@@ -434,14 +479,40 @@ public class VentanaMenuPrincipal extends JFrame {
             ventanaCancel.setVisible(true);
         });
 
+        menuItemGrafico1.addActionListener(e -> {
+            lblEstado.setText("Acción: Gráficos de Análisis");
+            VentanaGraficosAnalisis ventanaGraf = new VentanaGraficosAnalisis(sistema); // Pasa la instancia de sistema
+            ventanaGraf.setVisible(true);
+        });
 
+        menuItemRepInventario.addActionListener(e -> {
+            lblEstado.setText("Acción: Reporte de Inventario de Equipos");
+            // Abrir VentanaReporteInventarioEquipos
+            VentanaReporteInventarioEquipos ventanaRepInv = new VentanaReporteInventarioEquipos(sistema); // Pasa la instancia de sistema
+            ventanaRepInv.setVisible(true);
+        });
 
-        
+        menuItemRepOperaciones.addActionListener(e -> {
+            lblEstado.setText("Acción: Reporte de Operaciones de Mantenimiento");
+            // Abrir VentanaReporteOperacionesMantenimiento
+            VentanaReporteOperacionesMantenimiento ventanaRepOp = new VentanaReporteOperacionesMantenimiento(sistema); // Pasa la instancia de sistema
+            ventanaRepOp.setVisible(true);
+        });
 
+        menuItemRepOrdenes.addActionListener(e -> {
+            lblEstado.setText("Acción: Reporte de Órdenes de Trabajo");
+            // Abrir VentanaReporteOrdenesTrabajo
+            VentanaReporteOrdenesTrabajo ventanaRepOrd = new VentanaReporteOrdenesTrabajo(sistema); // Pasa la instancia de sistema
+            ventanaRepOrd.setVisible(true);
+        });
     }
 
+    /**
+     * Carga el árbol de navegación con la información del equipo raíz.
+     * @param equipoRaiz El equipo raíz para construir el árbol.
+     */
     private void cargarArbolNavegacion(NodoEquipo equipoRaiz) {
-        System.out.println("DEBUG: Cargando árbol para equipo ID: " + equipoRaiz.getId()); // DEBUG
+        // System.out.println("DEBUG: Cargando árbol para equipo ID: " + equipoRaiz.getId()); // DEBUG - ELIMINADO
         // Crear el nodo raíz del árbol Swing
         DefaultMutableTreeNode nodoRaizArbol = new DefaultMutableTreeNode(equipoRaiz);
         // Construir los nodos dependientes inmediatos (componentes, mantenimiento)
@@ -453,58 +524,63 @@ public class VentanaMenuPrincipal extends JFrame {
 
         // Expandir el nodo raíz para mostrar sus nodos inmediatos
         arbolNavegacion.expandRow(0); // Expande la primera fila (el nodo raíz)
-        System.out.println("DEBUG: Árbol cargado y nodo raíz expandido para equipo ID: " + equipoRaiz.getId()); // DEBUG
+        // System.out.println("DEBUG: Árbol cargado y nodo raíz expandido para equipo ID: " + equipoRaiz.getId()); // DEBUG - ELIMINADO
     }
 
+    /**
+     * Construye los nodos inmediatos (componentes, mantenimiento) para un nodo padre en el árbol.
+     * @param nodoPadreArbol El nodo padre en el modelo del árbol Swing.
+     * @param equipoActual El objeto NodoEquipo correspondiente al nodo padre.
+     */
     private void construirNodosInmediatos(DefaultMutableTreeNode nodoPadreArbol, NodoEquipo equipoActual) {
-        System.out.println("DEBUG: Construyendo nodos inmediatos para equipo ID: " + equipoActual.getId()); // DEBUG
+        // System.out.println("DEBUG: Construyendo nodos inmediatos para equipo ID: " + equipoActual.getId()); // DEBUG - ELIMINADO
         // Limpiar nodos actuales (excepto el nodo del equipo en sí, que es el padre)
         nodoPadreArbol.removeAllChildren();
 
         // 1. Añadir los nodos de Componentes (hijos directos) directamente bajo el nodo padre
-        System.out.println("DEBUG: Buscando hijos directos para equipo ID: " + equipoActual.getId()); // DEBUG
+        // System.out.println("DEBUG: Buscando hijos directos para equipo ID: " + equipoActual.getId()); // DEBUG - ELIMINADO
         NodoEquipo hijo = equipoActual.getPrimerHijo();
         if (hijo != null) {
-            System.out.println("DEBUG: Encontrado primer hijo: " + hijo.getId() + " - " + hijo.getDescripcion()); // DEBUG
+            // System.out.println("DEBUG: Encontrado primer hijo: " + hijo.getId() + " - " + hijo.getDescripcion()); // DEBUG - ELIMINADO
             while (hijo != null) {
                 DefaultMutableTreeNode nodoHijo = new DefaultMutableTreeNode(hijo);
                 nodoPadreArbol.add(nodoHijo);
-                System.out.println("DEBUG: Añadido hijo al árbol: " + hijo.getId() + " - " + hijo.getDescripcion()); // DEBUG
+                // System.out.println("DEBUG: Añadido hijo al árbol: " + hijo.getId() + " - " + hijo.getDescripcion()); // DEBUG - ELIMINADO
                 // No añadimos subcomponentes aquí, solo los hijos directos
                 hijo = hijo.getSiguienteHermano();
                 if (hijo != null) {
-                    System.out.println("DEBUG: Buscando siguiente hermano..."); // DEBUG
+                    // System.out.println("DEBUG: Buscando siguiente hermano..."); // DEBUG - ELIMINADO
                 }
             }
         } else {
-            System.out.println("DEBUG: El equipo ID: " + equipoActual.getId() + " no tiene hijos directos."); // DEBUG
+            // System.out.println("DEBUG: El equipo ID: " + equipoActual.getId() + " no tiene hijos directos."); // DEBUG - ELIMINADO
         }
 
-        // 2. Añadir nodo de Mantenimiento Preventivo (como una carpeta) - SOLO SI EXISTE PROGRAMA Y FASES
-        System.out.println("DEBUG: Buscando programa de mantenimiento preventivo para equipo ID: " + equipoActual.getId()); // DEBUG
+        // 2. Añadir nodo de Mantenimiento Preventivo (como una carpeta) - SIEMPRE, para cualquier equipo, SI HAY DATOS
+        // System.out.println("DEBUG: Buscando programa de mantenimiento preventivo para equipo ID: " + equipoActual.getId()); // DEBUG - ELIMINADO
         ProgramaMantenimientoPreventivo programa = sistema.obtenerProgramaDeEquipo(equipoActual.getId());
         if (programa != null && !programa.getFases().isEmpty()) { // <-- Condición crucial
-            System.out.println("DEBUG: Programa encontrado con " + programa.getFases().size() + " fases."); // DEBUG
+            // System.out.println("DEBUG: Programa encontrado con " + programa.getFases().size() + " fases."); // DEBUG - ELIMINADO
             DefaultMutableTreeNode nodoPreventivo = new DefaultMutableTreeNode("MANTENIMIENTO PREVENTIVO");
             for (int i = 0; i < programa.getFases().size(); i++) {
                 FaseMantenimiento fase = programa.getFases().get(i);
-                System.out.println("DEBUG: Procesando fase " + i + ": " + fase); // DEBUG
+                // System.out.println("DEBUG: Procesando fase " + i + ": " + fase); // DEBUG - ELIMINADO
                 DefaultMutableTreeNode nodoFase = new DefaultMutableTreeNode(fase);
                 // Buscar órdenes preventivas asociadas a esta fase para este equipo
                 List<OrdenTrabajo> ordenesEquipo = sistema.obtenerOrdenesPorEquipo(equipoActual.getId()).stream()
                         .filter(orden -> orden instanceof OrdenTrabajoPreventiva)
                         .collect(Collectors.toList()); // Usa Collectors importado
-                System.out.println("DEBUG: Numero de órdenes preventivas para el equipo: " + ordenesEquipo.size()); // DEBUG
+                // System.out.println("DEBUG: Numero total de órdenes para el equipo: " + ordenesEquipo.size()); // DEBUG - ELIMINADO
                 for (OrdenTrabajo orden : ordenesEquipo) {
                     if (orden instanceof OrdenTrabajoPreventiva) {
-                        System.out.println("DEBUG: Revisando Orden Preventiva ID: " + orden.getId() + " con idFase: " + ((OrdenTrabajoPreventiva) orden).getIdFase()); // DEBUG
+                        // System.out.println("DEBUG: Revisando Orden Preventiva ID: " + orden.getId() + " con idFase: " + ((OrdenTrabajoPreventiva) orden).getIdFase()); // DEBUG - ELIMINADO
                         // Comparamos por índice de fase o por ID de fase si lo guardamos en OrdenTrabajoPreventiva
                         // Por ahora, asumiremos que el idFase en la orden coincide con el índice 'i' de la lista del programa
                         if (((OrdenTrabajoPreventiva) orden).getIdFase() == i) {
-                             System.out.println("DEBUG: Coincidencia encontrada! Añadiendo orden preventiva ID: " + orden.getId() + " a la fase " + i); // DEBUG
+                             // System.out.println("DEBUG: Coincidencia encontrada! Añadiendo orden preventiva ID: " + orden.getId() + " a la fase " + i); // DEBUG - ELIMINADO
                              nodoFase.add(new DefaultMutableTreeNode(orden));
                         } else {
-                            System.out.println("DEBUG: No coincide idFase (" + ((OrdenTrabajoPreventiva) orden).getIdFase() + ") con índice de fase (" + i + ")"); // DEBUG
+                            // System.out.println("DEBUG: No coincide idFase (" + ((OrdenTrabajoPreventiva) orden).getIdFase() + ") con índice de fase (" + i + ")"); // DEBUG - ELIMINADO
                         }
                     }
                 }
@@ -512,30 +588,35 @@ public class VentanaMenuPrincipal extends JFrame {
             }
             nodoPadreArbol.add(nodoPreventivo); // <-- Añadir solo si hay fases
         } else {
-            System.out.println("DEBUG: No se encontró programa o fases para equipo ID: " + equipoActual.getId()); // DEBUG
+            // System.out.println("DEBUG: No se encontró programa o fases para equipo ID: " + equipoActual.getId()); // DEBUG - ELIMINADO
         }
 
-        // 3. Añadir nodo de Mantenimiento Correctivo (como una carpeta) - SOLO SI EXISTEN ORDENES
-        System.out.println("DEBUG: Buscando órdenes de mantenimiento correctivo para equipo ID: " + equipoActual.getId()); // DEBUG
+        // 3. Añadir nodo de Mantenimiento Correctivo (como una carpeta) - SIEMPRE, para cualquier equipo, SI HAY DATOS
+        // System.out.println("DEBUG: Buscando órdenes de mantenimiento correctivo para equipo ID: " + equipoActual.getId()); // DEBUG - ELIMINADO
         List<OrdenTrabajo> ordenesCorrectivas = sistema.obtenerOrdenesPorEquipo(equipoActual.getId()).stream()
                 .filter(orden -> orden instanceof OrdenTrabajoCorrectiva)
                 .collect(Collectors.toList()); // Usa Collectors importado
         if (!ordenesCorrectivas.isEmpty()) { // <-- Condición crucial
-            System.out.println("DEBUG: Encontradas " + ordenesCorrectivas.size() + " órdenes correctivas para equipo ID: " + equipoActual.getId()); // DEBUG
+            // System.out.println("DEBUG: Encontradas " + ordenesCorrectivas.size() + " órdenes correctivas para equipo ID: " + equipoActual.getId()); // DEBUG - ELIMINADO
             DefaultMutableTreeNode nodoCorrectivo = new DefaultMutableTreeNode("MANTENIMIENTO CORRECTIVO");
             for (OrdenTrabajo orden : ordenesCorrectivas) {
-                 System.out.println("DEBUG: Añadiendo orden correctiva ID: " + orden.getId() + " al árbol."); // DEBUG
+                 // System.out.println("DEBUG: Añadiendo orden correctiva ID: " + orden.getId() + " al árbol."); // DEBUG - ELIMINADO
                  nodoCorrectivo.add(new DefaultMutableTreeNode(orden));
             }
             nodoPadreArbol.add(nodoCorrectivo); // <-- Añadir solo si hay órdenes
         } else {
-            System.out.println("DEBUG: No se encontraron órdenes correctivas para equipo ID: " + equipoActual.getId()); // DEBUG
+            // System.out.println("DEBUG: No se encontraron órdenes correctivas para equipo ID: " + equipoActual.getId()); // DEBUG - ELIMINADO
         }
 
-        System.out.println("DEBUG: Nodos inmediatos construidos para equipo ID: " + equipoActual.getId()); // DEBUG
+        // System.out.println("DEBUG: Nodos inmediatos construidos para equipo ID: " + equipoActual.getId()); // DEBUG - ELIMINADO
     }
 
     // Nuevo método para añadir hijos y mantenimiento a un nodo existente (cuando se expande)
+    /**
+     * Añade los hijos directos y nodos de mantenimiento a un nodo del árbol si no los tiene ya.
+     * @param nodoPadre El nodo padre en el modelo del árbol Swing.
+     * @param equipoActual El objeto NodoEquipo correspondiente al nodo padre.
+     */
     private void agregarHijosYMantenimiento(DefaultMutableTreeNode nodoPadre, NodoEquipo equipoActual) {
         // Limpiar los hijos actuales del nodo padre
         nodoPadre.removeAllChildren();
@@ -589,6 +670,10 @@ public class VentanaMenuPrincipal extends JFrame {
         ((DefaultTreeModel) arbolNavegacion.getModel()).nodeStructureChanged(nodoPadre);
     }
 
+    /**
+     * Muestra los detalles de un nodo seleccionado en el panel derecho.
+     * @param nodo El objeto asociado al nodo del árbol seleccionado.
+     */
     private void mostrarDetalleNodo(Object nodo) {
         // Limpiar panel anterior
         panelDetalle.removeAll();
@@ -622,14 +707,14 @@ public class VentanaMenuPrincipal extends JFrame {
             // --- Especificaciones Técnicas ---
             panelInfo.add(new JLabel("Especificaciones Técnicas:"));
             String espec = equipo.getEspecificacionesTecnicas() != null ? equipo.getEspecificacionesTecnicas() : "N/A";
-            JLabel lblEspec = new JLabel("<html>" + espec.replace("\n", "<br>") + "</html>");
+            JLabel lblEspec = new JLabel("<html>" + espec.replace(" ", "<br>") + "</html>");
             lblEspec.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5)); // Margen interno
             panelInfo.add(lblEspec);
 
             // --- Información de Garantía ---
             panelInfo.add(new JLabel("Información de Garantía:"));
             String garantia = equipo.getInformacionGarantia() != null ? equipo.getInformacionGarantia() : "N/A";
-            JLabel lblGarantia = new JLabel("<html>" + garantia.replace("\n", "<br>") + "</html>");
+            JLabel lblGarantia = new JLabel("<html>" + garantia.replace(" ", "<br>") + "</html>");
             lblGarantia.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
             panelInfo.add(lblGarantia);
 
@@ -705,7 +790,7 @@ public class VentanaMenuPrincipal extends JFrame {
             JTextArea txtTareas = new JTextArea();
             StringBuilder tareasTexto = new StringBuilder();
             for (var tarea : orden.getTareas()) {
-                tareasTexto.append("- ").append(tarea.getDescripcion()).append("\n");
+                tareasTexto.append("- ").append(tarea.getDescripcion()).append(" ");
             }
             txtTareas.setText(tareasTexto.toString());
             txtTareas.setEditable(false);
@@ -736,6 +821,11 @@ public class VentanaMenuPrincipal extends JFrame {
         panelDetalle.repaint();
     }
 
+    /**
+     * Muestra los campos comunes de una OrdenTrabajo.
+     * @param panelInfo El panel donde se agregarán los componentes.
+     * @param orden La orden de trabajo.
+     */
     private void mostrarDetalleOrdenComun(JPanel panelInfo, OrdenTrabajo orden) {
         panelInfo.add(new JLabel("ID Orden: " + orden.getId()));
         panelInfo.add(new JLabel("ID Equipo: " + orden.getIdEquipo()));
@@ -758,7 +848,7 @@ public class VentanaMenuPrincipal extends JFrame {
             JTextArea txtFallasRep = new JTextArea();
             StringBuilder fallasRepTexto = new StringBuilder();
             for (var falla : orden.getFallasReportadas()) {
-                fallasRepTexto.append("- Causas: ").append(falla.getCausas()).append(", Acciones: ").append(falla.getAccionesTomadas()).append("\n");
+                fallasRepTexto.append("- Causas: ").append(falla.getCausas()).append(", Acciones: ").append(falla.getAccionesTomadas()).append(" ");
             }
             txtFallasRep.setText(fallasRepTexto.toString());
             txtFallasRep.setEditable(false);
@@ -773,7 +863,7 @@ public class VentanaMenuPrincipal extends JFrame {
             JTextArea txtFallasEnc = new JTextArea();
             StringBuilder fallasEncTexto = new StringBuilder();
             for (var falla : orden.getFallasEncontradas()) {
-                fallasEncTexto.append("- ID: ").append(falla.getIdFalla()).append(", Desc: ").append(falla.getDescripcionFalla()).append(", Causas: ").append(falla.getCausas()).append(", Acciones: ").append(falla.getAccionesTomadas()).append("\n");
+                fallasEncTexto.append("- ID: ").append(falla.getIdFalla()).append(", Desc: ").append(falla.getDescripcionFalla()).append(", Causas: ").append(falla.getCausas()).append(", Acciones: ").append(falla.getAccionesTomadas()).append(" ");
             }
             txtFallasEnc.setText(fallasEncTexto.toString());
             txtFallasEnc.setEditable(false);
@@ -783,8 +873,11 @@ public class VentanaMenuPrincipal extends JFrame {
         }
     }
 
-    // Método para actualizar la vista del árbol (llamado desde VentanaEliminarEquipo)
-    private void actualizarVistaArbol() {
+    /**
+     * Actualiza la vista del árbol (llamado desde otras ventanas, como VentanaEliminarEquipo).
+     * Recarga el árbol con el nodo raíz actualmente visualizado.
+     */
+    public void actualizarVistaArbol() {
         if (nodoRaizBuscado != null) {
             // Vuelve a cargar el árbol con el nodo raíz actual
             cargarArbolNavegacion(nodoRaizBuscado);
@@ -794,4 +887,18 @@ public class VentanaMenuPrincipal extends JFrame {
         // Si no hay un nodo raíz buscado, no hay nada que actualizar en la vista de árbol actual.
     }
 
+    public static void main(String[] args) {
+        SistemaPrincipal sistema = new SistemaPrincipal(); // Inicializa el sistema
+
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Intenta usar el look and feel del sistema
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception e) {
+                // Si falla, usa el look and feel por defecto de Java
+                e.printStackTrace();
+            }
+            new VentanaMenuPrincipal(sistema).setVisible(true); // Crea y muestra la ventana
+        });
+    }
 }
