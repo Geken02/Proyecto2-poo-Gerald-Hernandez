@@ -1,9 +1,0 @@
-package poo.proyecto2;
-
-public enum EstadoEquipo {
-    FUNCIONANDO,
-    EN_MANTENIMIENTO_PREVENTIVO,
-    EN_MANTENIMIENTO_CORRECTIVO,
-    FUERA_DE_SERVICIO,
-    DESECHADO
-}

@@ -1,7 +1,7 @@
 package poo.proyecto2.reportes;
 
-import poo.proyecto2.mantenimiento.*;
-import poo.proyecto2.sistema.SistemaPrincipal;
+import poo.proyecto2.modelo.mantenimiento.*;
+import poo.proyecto2.controlador.sistema.SistemaPrincipal;
 
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.PdfDocument;

@@ -1,9 +1,9 @@
 package poo.proyecto2;
 
-import poo.proyecto2.gui.VentanaMenuPrincipal;
-import poo.proyecto2.equipos.*;
-import poo.proyecto2.sistema.*;
-import poo.proyecto2.mantenimiento.*;
+import poo.proyecto2.vista.gui.VentanaMenuPrincipal;
+import poo.proyecto2.modelo.equipos.*;
+import poo.proyecto2.controlador.sistema.*;
+import poo.proyecto2.modelo.mantenimiento.*;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;

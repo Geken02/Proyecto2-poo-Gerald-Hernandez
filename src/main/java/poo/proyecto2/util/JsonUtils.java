@@ -2,8 +2,8 @@ package poo.proyecto2.util;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import poo.proyecto2.mantenimiento.*;
-import poo.proyecto2.equipos.*;
+import poo.proyecto2.modelo.mantenimiento.*;
+import poo.proyecto2.modelo.equipos.*;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
