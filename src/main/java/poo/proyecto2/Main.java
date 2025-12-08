@@ -16,7 +16,7 @@ public class Main {
     public static void main(String[] args) {
     
 
-        SistemaPrincipal sistema = new SistemaPrincipal(); // Inicializa el sistema
+        SistemaPrincipal sistema = new SistemaPrincipal(); 
 
         SwingUtilities.invokeLater(() -> {
             try {
@@ -26,7 +26,7 @@ public class Main {
                 // Si falla, usa el look and feel por defecto de Java
                 e.printStackTrace();
             }
-            new VentanaMenuPrincipal(sistema).setVisible(true); // Crea y muestra la ventana
+            new VentanaMenuPrincipal(sistema).setVisible(true); 
         });
     }
 }

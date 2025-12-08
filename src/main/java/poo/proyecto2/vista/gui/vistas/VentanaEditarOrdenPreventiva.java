@@ -1,8 +1,10 @@
 package poo.proyecto2.vista.gui.vistas;
 
 import poo.proyecto2.modelo.mantenimiento.*;
+import poo.proyecto2.modelo.equipos.FallaEquipo; // Asegúrate del paquete correcto
 import poo.proyecto2.controlador.sistema.SistemaPrincipal;
 import poo.proyecto2.vista.gui.VentanaMenuPrincipal;
+import poo.proyecto2.controlador.ControladorEditarOrdenPreventiva;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -11,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class VentanaEditarOrdenPreventiva extends JFrame {
@@ -53,19 +54,19 @@ public class VentanaEditarOrdenPreventiva extends JFrame {
     private JPanel panelIniciar;
     private JLabel lblIniciarTitulo;
     private JLabel lblFechaInicioReal;
-    private JFormattedTextField txtFechaInicioReal;
+    private JFormattedTextField txtFechaInicioReal; // <-- Cambiado a JTextField en el controlador
     private JButton btnIniciar;
 
     private JPanel panelFinalizar;
     private JLabel lblFinalizarTitulo;
     private JLabel lblFechaFinReal;
-    private JFormattedTextField txtFechaFinReal;
+    private JFormattedTextField txtFechaFinReal; // <-- Cambiado a JTextField en el controlador
     private JLabel lblHorasTrabajo;
-    private JSpinner spnHorasTrabajo;
+    private JSpinner spnHorasTrabajo; // <-- Cambiado a JTextField en el controlador
     private JLabel lblCostoManoObra;
-    private JFormattedTextField txtCostoManoObra;
+    private JFormattedTextField txtCostoManoObra; // <-- Cambiado a JTextField en el controlador
     private JLabel lblCostoMateriales;
-    private JFormattedTextField txtCostoMateriales;
+    private JFormattedTextField txtCostoMateriales; // <-- Cambiado a JTextField en el controlador
     private JLabel lblObservacionesEjecucion;
     private JTextArea txtObservacionesEjecucion;
     private JScrollPane scrollObsEjecucion;
@@ -74,7 +75,7 @@ public class VentanaEditarOrdenPreventiva extends JFrame {
     private JPanel panelCancelar;
     private JLabel lblCancelarTitulo;
     private JLabel lblFechaCancelacion;
-    private JFormattedTextField txtFechaCancelacion;
+    private JFormattedTextField txtFechaCancelacion; // <-- Cambiado a JTextField en el controlador
     private JLabel lblMotivoCancelacion;
     private JTextArea txtMotivoCancelacion;
     private JScrollPane scrollMotivoCancelacion;
@@ -84,19 +85,25 @@ public class VentanaEditarOrdenPreventiva extends JFrame {
 
     // Columnas de las tablas
     private static final String[] COLUMNAS_TAREAS = {"ID Tarea", "Descripción"};
-    private static final String[] COLUMNAS_FALLAS = {"ID Falla", "Descripción", "Causas", "Acciones Tomadas"};
+    private static final String[] COLUMNAS_FALLAS = {"Tipo", "ID Falla", "Descripción", "Causas", "Acciones Tomadas"};
+
+    // Referencia al controlador
+    private ControladorEditarOrdenPreventiva controlador;
 
     public VentanaEditarOrdenPreventiva(SistemaPrincipal sistema, VentanaMenuPrincipal ventanaPadre, OrdenTrabajoPreventiva ordenAErEditar) {
         this.sistema = sistema;
         this.ventanaPadre = ventanaPadre;
         this.ordenAErEditar = ordenAErEditar;
+        // Crear el controlador pasando el modelo, la vista y la orden a editar
+        this.controlador = new ControladorEditarOrdenPreventiva(sistema, this, ordenAErEditar);
+
         inicializarComponentes();
         cargarDatosIniciales();
         configurarEventos();
         setTitle("Editar Orden Preventiva ID: " + ordenAErEditar.getId());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(true);
-        setSize(1000, 800); // Tamaño más grande para acomodar todo
+        setSize(1000, 800); // Tamaño más grande
         setLocationRelativeTo(ventanaPadre);
     }
 
@@ -207,8 +214,8 @@ public class VentanaEditarOrdenPreventiva extends JFrame {
         gbcIniciar.anchor = GridBagConstraints.WEST;
 
         gbcIniciar.gridx = 0; gbcIniciar.gridy = 0;
-        lblIniciarTitulo = new JLabel("Fecha de Inicio Real *:");
-        panelIniciar.add(lblIniciarTitulo, gbcIniciar);
+        lblFechaInicioReal = new JLabel("Fecha de Inicio Real *:");
+        panelIniciar.add(lblFechaInicioReal, gbcIniciar);
 
         gbcIniciar.gridx = 1;
         txtFechaInicioReal = new JFormattedTextField(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -229,8 +236,8 @@ public class VentanaEditarOrdenPreventiva extends JFrame {
         gbcFinalizar.anchor = GridBagConstraints.WEST;
 
         gbcFinalizar.gridx = 0; gbcFinalizar.gridy = 0;
-        lblFinalizarTitulo = new JLabel("Fecha de Fin Real *:");
-        panelFinalizar.add(lblFinalizarTitulo, gbcFinalizar);
+        lblFechaFinReal = new JLabel("Fecha de Fin Real *:");
+        panelFinalizar.add(lblFechaFinReal, gbcFinalizar);
 
         gbcFinalizar.gridx = 1;
         txtFechaFinReal = new JFormattedTextField(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -290,8 +297,8 @@ public class VentanaEditarOrdenPreventiva extends JFrame {
         gbcCancelar.anchor = GridBagConstraints.WEST;
 
         gbcCancelar.gridx = 0; gbcCancelar.gridy = 0;
-        lblCancelarTitulo = new JLabel("Fecha de Cancelación *:");
-        panelCancelar.add(lblCancelarTitulo, gbcCancelar);
+        lblFechaCancelacion = new JLabel("Fecha de Cancelación *:");
+        panelCancelar.add(lblFechaCancelacion, gbcCancelar);
 
         gbcCancelar.gridx = 1;
         txtFechaCancelacion = new JFormattedTextField(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -340,12 +347,12 @@ public class VentanaEditarOrdenPreventiva extends JFrame {
         modeloTablaFallas.setRowCount(0);
         // Fallas Reportadas
         for (var falla : ordenAErEditar.getFallasReportadas()) {
-            Object[] fila = {"(Reportada)", "", falla.getCausas(), falla.getAccionesTomadas()};
+            Object[] fila = {"Reportada", "(N/A)", "(No aplica)", falla.getCausas(), falla.getAccionesTomadas()};
             modeloTablaFallas.addRow(fila);
         }
         // Fallas Encontradas
         for (var falla : ordenAErEditar.getFallasEncontradas()) {
-            Object[] fila = {falla.getIdFalla(), falla.getDescripcionFalla(), falla.getCausas(), falla.getAccionesTomadas()};
+            Object[] fila = {"Encontrada", falla.getIdFalla(), falla.getDescripcionFalla(), falla.getCausas(), falla.getAccionesTomadas()};
             modeloTablaFallas.addRow(fila);
         }
 
@@ -369,7 +376,7 @@ public class VentanaEditarOrdenPreventiva extends JFrame {
         actualizarInterfazSegunEstado();
     }
 
-    private void actualizarInterfazSegunEstado() {
+    public void actualizarInterfazSegunEstado() {
         OrdenTrabajo.EstadoOrden estado = ordenAErEditar.getEstado();
         btnIniciar.setEnabled(estado == OrdenTrabajo.EstadoOrden.PENDIENTE);
         btnFinalizar.setEnabled(estado == OrdenTrabajo.EstadoOrden.EN_PROGRESO);
@@ -386,122 +393,30 @@ public class VentanaEditarOrdenPreventiva extends JFrame {
     }
 
     private void configurarEventos() {
-        btnIniciar.addActionListener(e -> iniciarOrden());
-
-        btnFinalizar.addActionListener(e -> finalizarOrden());
-
-        btnCancelar.addActionListener(e -> cancelarOrden());
-
-        btnCerrar.addActionListener(e -> dispose()); // Cierra la ventana
+        btnIniciar.addActionListener(e -> controlador.iniciarOrden()); // <-- Llama al controlador
+        btnFinalizar.addActionListener(e -> controlador.finalizarOrden()); // <-- Llama al controlador
+        btnCancelar.addActionListener(e -> controlador.cancelarOrden()); // <-- Llama al controlador
+        btnCerrar.addActionListener(e -> controlador.cancelarVentana()); // <-- Llama al controlador
     }
 
-    private void iniciarOrden() {
-        // Validar campos requeridos
-        if (txtFechaInicioReal.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese la fecha de inicio real.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    // --- Métodos para que el controlador interactúe con la vista ---
+    public JTextField getTxtIdOrden() { return txtIdOrden; }
+    public JTextField getTxtIdEquipo() { return txtIdEquipo; }
+    public JTextField getTxtEstado() { return txtEstado; }
+    // --- CORRECCIÓN: Métodos getter para JTextField ---
+    public JFormattedTextField getTxtFechaInicioReal() { return txtFechaInicioReal; }
+    public JFormattedTextField getTxtFechaFinReal() { return txtFechaFinReal; }
+    public JSpinner getSpnHorasTrabajo() { return spnHorasTrabajo; }
+    public JFormattedTextField getTxtCostoManoObra() { return txtCostoManoObra; }
+    public JFormattedTextField getTxtCostoMateriales() { return txtCostoMateriales; }
+    public JFormattedTextField getTxtFechaCancelacion() { return txtFechaCancelacion; }
+    // --- FIN CORRECCIÓN ---
+    public JTextArea getTxtObservacionesEjecucion() { return txtObservacionesEjecucion; }
+    public JTextArea getTxtMotivoCancelacion() { return txtMotivoCancelacion; }
+    public DefaultTableModel getModeloTablaFallas() { return modeloTablaFallas; }
+    public DefaultTableModel getModeloTablaTareas() { return modeloTablaTareas; } // Añadido para consistencia si el controlador lo necesita
 
-        LocalDate fechaInicio;
-        try {
-            fechaInicio = LocalDate.parse(txtFechaInicioReal.getText().trim());
-        } catch (java.time.format.DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese una fecha de inicio válida en formato AAAA-MM-DD.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Llamar al sistema para iniciar la orden
-        boolean iniciada = sistema.iniciarOrdenPreventiva(ordenAErEditar.getId(), fechaInicio);
-
-        if (iniciada) {
-            JOptionPane.showMessageDialog(this, "Orden ID " + ordenAErEditar.getId() + " iniciada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            // Actualizar el estado de la orden localmente
-            ordenAErEditar.iniciar(fechaInicio);
-            // Actualizar la interfaz
-            txtEstado.setText(ordenAErEditar.getEstado().toString());
-            txtFechaInicioReal.setValue(fechaInicio);
-            actualizarInterfazSegunEstado(); // Deshabilita iniciar, habilita finalizar/cancelar
-        } else {
-            JOptionPane.showMessageDialog(this, "No se pudo iniciar la orden. Puede que ya esté iniciada, completada o cancelada, o hubo un error al guardar.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void finalizarOrden() {
-        // Validar campos requeridos
-        if (txtFechaFinReal.getText().trim().isEmpty() ||
-            spnHorasTrabajo.getValue().equals(0.0f) ||
-            txtCostoManoObra.getText().trim().isEmpty() ||
-            txtCostoMateriales.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos obligatorios (marcados con *).", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        LocalDate fechaFin;
-        float horas;
-        int costoMO, costoMat;
-        String obsEjecucion;
-
-        try {
-            fechaFin = LocalDate.parse(txtFechaFinReal.getText().trim());
-            horas = ((Number) spnHorasTrabajo.getValue()).floatValue();
-            costoMO = ((Number) txtCostoManoObra.getValue()).intValue();
-            costoMat = ((Number) txtCostoMateriales.getValue()).intValue();
-            obsEjecucion = txtObservacionesEjecucion.getText().trim();
-        } catch (java.time.format.DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese una fecha de finalización válida en formato AAAA-MM-DD.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese valores numéricos válidos para Horas, Costo Mano de Obra y Costo Materiales.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Llamar al sistema para finalizar la orden
-        boolean finalizada = sistema.finalizarOrdenPreventiva(ordenAErEditar.getId(), fechaFin, horas, costoMO, costoMat, obsEjecucion, null);
-
-        if (finalizada) {
-            JOptionPane.showMessageDialog(this, "Orden ID " + ordenAErEditar.getId() + " finalizada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            // Actualizar el estado y datos de la orden localmente
-            ordenAErEditar.finalizar(fechaFin, horas, costoMO, costoMat, obsEjecucion);
-            // Actualizar la interfaz
-            txtEstado.setText(ordenAErEditar.getEstado().toString());
-            txtFechaFinReal.setValue(fechaFin);
-            actualizarInterfazSegunEstado(); // Deshabilita iniciar/finalizar/cancelar
-        } else {
-            JOptionPane.showMessageDialog(this, "No se pudo finalizar la orden. Puede que ya esté completada o cancelada, o hubo un error al guardar.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void cancelarOrden() {
-        // Validar campos requeridos
-        if (txtFechaCancelacion.getText().trim().isEmpty() || txtMotivoCancelacion.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos obligatorios (marcados con *).", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        LocalDate fechaCancelacion;
-        String motivo = txtMotivoCancelacion.getText().trim();
-
-        try {
-            fechaCancelacion = LocalDate.parse(txtFechaCancelacion.getText().trim());
-        } catch (java.time.format.DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese una fecha de cancelación válida en formato AAAA-MM-DD.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Llamar al sistema para cancelar la orden
-        boolean cancelada = sistema.cancelarOrdenPreventiva(ordenAErEditar.getId(), fechaCancelacion, motivo);
-
-        if (cancelada) {
-            JOptionPane.showMessageDialog(this, "Orden ID " + ordenAErEditar.getId() + " cancelada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            // Actualizar el estado y datos de la orden localmente
-            ordenAErEditar.cancelar(fechaCancelacion, motivo);
-            // Actualizar la interfaz
-            txtEstado.setText(ordenAErEditar.getEstado().toString());
-            txtFechaCancelacion.setValue(fechaCancelacion);
-            txtMotivoCancelacion.setText(motivo);
-            actualizarInterfazSegunEstado(); // Deshabilita iniciar/finalizar/cancelar
-        } else {
-            JOptionPane.showMessageDialog(this, "No se pudo cancelar la orden. Puede que ya esté completada o cancelada, o hubo un error al guardar.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
+    public void mostrarMensaje(String mensaje, String titulo, int tipo) { JOptionPane.showMessageDialog(this, mensaje, titulo, tipo); }
+    public void cerrarVentana() { this.dispose(); }
+    // ---
 }

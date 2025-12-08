@@ -90,6 +90,39 @@
     ]
   },
   {
+    "idEquipo": 24,
+    "fases": [
+      {
+        "tipoFrecuencia": "MES",
+        "medidorFrecuencia": 2,
+        "cantidadCiclos": 10,
+        "idsTareasMaestras": [
+          8,
+          5,
+          1
+        ],
+        "partes": "Motor",
+        "herramientas": "Destorinllador",
+        "personal": "Tecnico",
+        "horasEstimadas": 3.0
+      },
+      {
+        "tipoFrecuencia": "SEMANA",
+        "medidorFrecuencia": 2,
+        "cantidadCiclos": 10,
+        "idsTareasMaestras": [
+          8,
+          4,
+          1
+        ],
+        "partes": "Valvulas",
+        "herramientas": "Cegueta",
+        "personal": "Tecnico",
+        "horasEstimadas": 2.0
+      }
+    ]
+  },
+  {
     "idEquipo": 10,
     "fases": [
       {

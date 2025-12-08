@@ -4,7 +4,7 @@ import poo.proyecto2.modelo.equipos.NodoEquipo;
 import poo.proyecto2.modelo.mantenimiento.*;
 import poo.proyecto2.controlador.sistema.SistemaPrincipal;
 import poo.proyecto2.vista.gui.VentanaMenuPrincipal;
-import poo.proyecto2.modelo.equipos.FallaEquipo;
+import poo.proyecto2.controlador.ControladorRegistrarOrdenCorrectiva;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -19,18 +19,18 @@ import java.util.List;
 public class VentanaRegistrarOrdenCorrectiva extends JFrame {
 
     private SistemaPrincipal sistema;
-    private VentanaMenuPrincipal ventanaPadre; // Opcional
+    private VentanaMenuPrincipal ventanaPadre;
 
     // Componentes de la interfaz
     private JLabel lblTitulo;
     private JLabel lblIdEquipo;
     private JTextField txtIdEquipo;
     private JButton btnBuscarEquipo;
-    private JLabel lblInfoEquipo; // Para mostrar info del equipo encontrado
+    private JLabel lblInfoEquipo; 
     private JLabel lblFechaOrden;
-    private JFormattedTextField txtFechaOrden;
+    private JFormattedTextField txtFechaOrden; 
     private JLabel lblFechaEjecucion;
-    private JFormattedTextField txtFechaEjecucion;
+    private JFormattedTextField txtFechaEjecucion; 
     private JLabel lblObservaciones;
     private JTextArea txtObservaciones;
     private JScrollPane scrollObservaciones;
@@ -44,43 +44,37 @@ public class VentanaRegistrarOrdenCorrectiva extends JFrame {
     private JButton btnAgregarFallaRep;
     private JButton btnEliminarFallaRep;
 
-    // Panel para gestionar fallas encontradas (con ID de falla maestra)
-    private JPanel panelFallasEncontradas;
-    private JLabel lblFallasEncTitulo;
-    private JScrollPane scrollTablaFallasEnc;
-    private JTable tablaFallasEnc;
-    private DefaultTableModel modeloTablaFallasEnc;
-    private JButton btnAgregarFallaEnc;
-    private JButton btnEliminarFallaEnc;
-
-    // Ventana secundaria para agregar falla encontrada
-    private JDialog ventanaAgregarFallaEnc;
-    private JComboBox<FallaEquipo> cmbFallasDisponibles;
-    private JTextField txtCausasEnc;
-    private JTextField txtAccionesEnc;
+    // Ventana secundaria para agregar falla reportada (JDialog)
+    private JDialog ventanaAgregarFallaRep;
+    private JTextField txtCausasRep;
+    private JTextField txtAccionesRep;
+    private JButton btnAceptarAgregarRep;
+    private JButton btnCancelarAgregarRep;
 
     private JButton btnRegistrar;
     private JButton btnCancelar;
 
-    // Columnas de las tablas de fallas
+    // Columnas de la tabla de fallas reportadas
     private static final String[] COLUMNAS_FALLAS_REP = {"Causas", "Acciones Tomadas"};
-    private static final String[] COLUMNAS_FALLAS_ENC = {"ID Falla", "Descripción", "Causas", "Acciones Tomadas"};
 
-    // Variables temporales para almacenar fallas antes de guardar
+    // Variables temporales para almacenar fallas reportadas antes de guardar
     private List<OrdenTrabajo.FallaReportada> fallasReportadasTemp;
-    private List<OrdenTrabajo.FallaEncontrada> fallasEncontradasTemp;
+
+    // Referencia al controlador
+    private ControladorRegistrarOrdenCorrectiva controlador;
 
     public VentanaRegistrarOrdenCorrectiva(SistemaPrincipal sistema, VentanaMenuPrincipal ventanaPadre) {
         this.sistema = sistema;
         this.ventanaPadre = ventanaPadre;
-        this.fallasReportadasTemp = new ArrayList<>();
-        this.fallasEncontradasTemp = new ArrayList<>();
+        this.fallasReportadasTemp = new ArrayList<>(); 
+        // Crear el controlador pasando el modelo y la vista
+        this.controlador = new ControladorRegistrarOrdenCorrectiva(sistema, this);
         inicializarComponentes();
         configurarEventos();
         setTitle("Registrar Nueva Orden de Trabajo Correctiva");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(true);
-        setSize(900, 700);
+        setSize(800, 600); // Tamaño ajustado
         setLocationRelativeTo(ventanaPadre);
     }
 
@@ -99,14 +93,17 @@ public class VentanaRegistrarOrdenCorrectiva extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Fila 0: ID Equipo
         gbc.gridx = 0; gbc.gridy = 0; gbc.fill = GridBagConstraints.NONE;
         lblIdEquipo = new JLabel("ID del Equipo *:");
         panelFormulario.add(lblIdEquipo, gbc);
 
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
-        txtIdEquipo = new JTextField(10);
+        gbc.gridx = 1; 
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0; 
+        txtIdEquipo = new JTextField(30); 
+        txtIdEquipo.setMinimumSize(new Dimension(150, 25)); 
         panelFormulario.add(txtIdEquipo, gbc);
+        gbc.weightx = 0.0; 
 
         gbc.gridx = 2; gbc.fill = GridBagConstraints.NONE;
         btnBuscarEquipo = new JButton("Buscar");
@@ -124,7 +121,7 @@ public class VentanaRegistrarOrdenCorrectiva extends JFrame {
 
         gbc.gridx = 1; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.HORIZONTAL;
         txtFechaOrden = new JFormattedTextField(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        txtFechaOrden.setValue(LocalDate.now()); // Fecha por defecto
+        txtFechaOrden.setValue(LocalDate.now()); // Fecha por defecto: hoy
         panelFormulario.add(txtFechaOrden, gbc);
         gbc.gridwidth = 1; // Resetear gridwidth
 
@@ -141,7 +138,7 @@ public class VentanaRegistrarOrdenCorrectiva extends JFrame {
 
         // Fila 3: Observaciones
         gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 4; gbc.fill = GridBagConstraints.BOTH;
-        lblObservaciones = new JLabel("Observaciones:");
+        lblObservaciones = new JLabel("Observaciones Iniciales:");
         panelFormulario.add(lblObservaciones, gbc);
 
         gbc.gridy = 4;
@@ -151,10 +148,7 @@ public class VentanaRegistrarOrdenCorrectiva extends JFrame {
 
         add(panelFormulario, BorderLayout.CENTER);
 
-        // --- Panel Superior Central: Fallas Reportadas y Encontradas ---
-        JSplitPane splitFallas = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-
-        // --- Panel de Fallas Reportadas ---
+        // --- Panel Superior Central: Fallas Reportadas ---
         panelFallasReportadas = new JPanel(new BorderLayout());
         panelFallasReportadas.setBorder(BorderFactory.createTitledBorder("Fallas Reportadas Inicialmente"));
 
@@ -175,34 +169,9 @@ public class VentanaRegistrarOrdenCorrectiva extends JFrame {
         panelBotonesRep.add(btnEliminarFallaRep);
         panelFallasReportadas.add(panelBotonesRep, BorderLayout.SOUTH);
 
-        // --- Panel de Fallas Encontradas ---
-        panelFallasEncontradas = new JPanel(new BorderLayout());
-        panelFallasEncontradas.setBorder(BorderFactory.createTitledBorder("Fallas Encontradas Durante el Trabajo"));
-
-        modeloTablaFallasEnc = new DefaultTableModel(COLUMNAS_FALLAS_ENC, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // No se edita directamente la tabla
-            }
-        };
-        tablaFallasEnc = new JTable(modeloTablaFallasEnc);
-        scrollTablaFallasEnc = new JScrollPane(tablaFallasEnc);
-        panelFallasEncontradas.add(scrollTablaFallasEnc, BorderLayout.CENTER);
-
-        JPanel panelBotonesEnc = new JPanel(new FlowLayout());
-        btnAgregarFallaEnc = new JButton("Agregar");
-        btnEliminarFallaEnc = new JButton("Eliminar");
-        panelBotonesEnc.add(btnAgregarFallaEnc);
-        panelBotonesEnc.add(btnEliminarFallaEnc);
-        panelFallasEncontradas.add(panelBotonesEnc, BorderLayout.SOUTH);
-
-        splitFallas.setTopComponent(panelFallasReportadas);
-        splitFallas.setBottomComponent(panelFallasEncontradas);
-        splitFallas.setResizeWeight(0.5); // División 50-50
-
-        // Añadir el split de fallas al centro del formulario principal
+        // Añadir el panel de fallas reportadas al sur del formulario principal
         gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 4; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 1.0;
-        panelFormulario.add(splitFallas, gbc);
+        panelFormulario.add(panelFallasReportadas, gbc);
         gbc.weighty = 0.0; // Resetear weighty
 
         // --- Panel Inferior: Botones ---
@@ -215,202 +184,109 @@ public class VentanaRegistrarOrdenCorrectiva extends JFrame {
     }
 
     private void configurarEventos() {
-        btnBuscarEquipo.addActionListener(e -> {
-            String idStr = txtIdEquipo.getText().trim();
-            if (!idStr.isEmpty()) {
-                try {
-                    int id = Integer.parseInt(idStr);
-                    NodoEquipo equipo = sistema.buscarEquipoPorId(id);
-                    if (equipo != null) {
-                        lblInfoEquipo.setText(" (" + equipo.getDescripcion() + " - ID: " + equipo.getId() + ")");
-                    } else {
-                        JOptionPane.showMessageDialog(this, "No se encontró un equipo con ID: " + id, "Error", JOptionPane.ERROR_MESSAGE);
-                        lblInfoEquipo.setText(" (Equipo no encontrado)");
-                    }
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Por favor, ingrese un ID de equipo válido.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, ingrese un ID de equipo.", "Error", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
-        btnAgregarFallaRep.addActionListener(e -> {
-            String causas = JOptionPane.showInputDialog(this, "Ingrese las causas de la falla reportada:");
-            if (causas != null && !causas.trim().isEmpty()) {
-                String acciones = JOptionPane.showInputDialog(this, "Ingrese las acciones tomadas:");
-                if (acciones != null && !acciones.trim().isEmpty()) {
-                    OrdenTrabajo.FallaReportada fallaRep = new OrdenTrabajo.FallaReportada(causas.trim(), acciones.trim());
-                    fallasReportadasTemp.add(fallaRep);
-                    modeloTablaFallasRep.addRow(new Object[]{causas.trim(), acciones.trim()});
-                }
-            }
-        });
-
-        btnEliminarFallaRep.addActionListener(e -> {
-            int filaSeleccionada = tablaFallasRep.getSelectedRow();
-            if (filaSeleccionada >= 0) {
-                fallasReportadasTemp.remove(filaSeleccionada);
-                modeloTablaFallasRep.removeRow(filaSeleccionada);
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, seleccione una falla reportada de la lista para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
-        btnAgregarFallaEnc.addActionListener(e -> abrirVentanaAgregarFallaEnc());
-
-        btnEliminarFallaEnc.addActionListener(e -> {
-            int filaSeleccionada = tablaFallasEnc.getSelectedRow();
-            if (filaSeleccionada >= 0) {
-                fallasEncontradasTemp.remove(filaSeleccionada);
-                modeloTablaFallasEnc.removeRow(filaSeleccionada);
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, seleccione una falla encontrada de la lista para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
-        btnRegistrar.addActionListener(e -> registrarOrden());
-
-        btnCancelar.addActionListener(e -> dispose()); // Cierra la ventana
+        btnBuscarEquipo.addActionListener(e -> controlador.buscarEquipo()); 
+        btnAgregarFallaRep.addActionListener(e -> controlador.agregarFallaReportada());
+        btnEliminarFallaRep.addActionListener(e -> controlador.eliminarFallaReportada());
+        btnRegistrar.addActionListener(e -> controlador.registrarOrden());
+        btnCancelar.addActionListener(e -> controlador.cancelar()); 
     }
 
-    private void abrirVentanaAgregarFallaEnc() {
-        if (ventanaAgregarFallaEnc != null && ventanaAgregarFallaEnc.isVisible()) {
-            ventanaAgregarFallaEnc.toFront();
+    // --- Métodos para que el controlador interactúe con la vista ---
+    public JTextField getTxtIdEquipo() { return txtIdEquipo; }
+    public JFormattedTextField getTxtFechaOrden() { return txtFechaOrden; }
+    public JFormattedTextField getTxtFechaEjecucion() { return txtFechaEjecucion; }
+    public JTextArea getTxtObservaciones() { return txtObservaciones; }
+
+    public void mostrarInfoEquipo(String texto) { lblInfoEquipo.setText(texto); }
+    public void mostrarMensaje(String mensaje, String titulo, int tipo) { JOptionPane.showMessageDialog(this, mensaje, titulo, tipo); }
+    public void limpiarInfoEquipo() { lblInfoEquipo.setText(" (Equipo no encontrado)"); }
+
+    public JTable getTablaFallasRep() { return tablaFallasRep; }
+    public DefaultTableModel getModeloTablaFallasRep() { return modeloTablaFallasRep; }
+
+    public List<OrdenTrabajo.FallaReportada> getFallasReportadasTemp() { return new ArrayList<>(fallasReportadasTemp); } // Devolver copia
+
+    public void limpiarFormulario() {
+        txtIdEquipo.setText("");
+        limpiarInfoEquipo();
+        txtFechaOrden.setValue(LocalDate.now());
+        txtFechaEjecucion.setValue(LocalDate.now().plusDays(1));
+        txtObservaciones.setText("");
+        modeloTablaFallasRep.setRowCount(0);
+        fallasReportadasTemp.clear();
+    }
+
+    public void cerrarVentana() { this.dispose(); }
+
+    // --- Métodos específicos para la gestión de fallas reportadas ---
+    public void abrirVentanaAgregarFallaRep() {
+        if (ventanaAgregarFallaRep != null && ventanaAgregarFallaRep.isVisible()) {
+            ventanaAgregarFallaRep.toFront();
             return;
         }
 
-        ventanaAgregarFallaEnc = new JDialog(this, "Agregar Falla Encontrada", true);
-        ventanaAgregarFallaEnc.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        ventanaAgregarFallaEnc.setLayout(new BorderLayout());
+        ventanaAgregarFallaRep = new JDialog(this, "Agregar Falla Reportada", true);
+        ventanaAgregarFallaRep.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        ventanaAgregarFallaRep.setLayout(new BorderLayout());
 
         JPanel panelAgregarFalla = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
 
         gbc.gridx = 0; gbc.gridy = 0;
-        panelAgregarFalla.add(new JLabel("Falla:"), gbc);
-        cmbFallasDisponibles = new JComboBox<>();
-        List<FallaEquipo> fallasMaestras = sistema.obtenerTodasLasFallasMaestras();
-        for (FallaEquipo falla : fallasMaestras) {
-            cmbFallasDisponibles.addItem(falla);
-        }
+        panelAgregarFalla.add(new JLabel("Causas *:"), gbc);
+        txtCausasRep = new JTextField(20);
         gbc.gridx = 1;
-        panelAgregarFalla.add(cmbFallasDisponibles, gbc);
+        panelAgregarFalla.add(txtCausasRep, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1;
-        panelAgregarFalla.add(new JLabel("Causas:"), gbc);
-        txtCausasEnc = new JTextField(20);
+        panelAgregarFalla.add(new JLabel("Acciones Tomadas *:"), gbc);
+        txtAccionesRep = new JTextField(20);
         gbc.gridx = 1;
-        panelAgregarFalla.add(txtCausasEnc, gbc);
+        panelAgregarFalla.add(txtAccionesRep, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2;
-        panelAgregarFalla.add(new JLabel("Acciones Tomadas:"), gbc);
-        txtAccionesEnc = new JTextField(20);
-        gbc.gridx = 1;
-        panelAgregarFalla.add(txtAccionesEnc, gbc);
-
-        ventanaAgregarFallaEnc.add(panelAgregarFalla, BorderLayout.CENTER);
+        ventanaAgregarFallaRep.add(panelAgregarFalla, BorderLayout.CENTER);
 
         JPanel panelBotonesAgregar = new JPanel(new FlowLayout());
-        JButton btnAceptarAgregar = new JButton("Aceptar");
-        JButton btnCancelarAgregar = new JButton("Cancelar");
-        panelBotonesAgregar.add(btnAceptarAgregar);
-        panelBotonesAgregar.add(btnCancelarAgregar);
-        ventanaAgregarFallaEnc.add(panelBotonesAgregar, BorderLayout.SOUTH);
+        btnAceptarAgregarRep = new JButton("Aceptar");
+        btnCancelarAgregarRep = new JButton("Cancelar");
+        panelBotonesAgregar.add(btnAceptarAgregarRep);
+        panelBotonesAgregar.add(btnCancelarAgregarRep);
+        ventanaAgregarFallaRep.add(panelBotonesAgregar, BorderLayout.SOUTH);
 
-        btnAceptarAgregar.addActionListener(aceptarEvt -> {
-            FallaEquipo fallaSeleccionada = (FallaEquipo) cmbFallasDisponibles.getSelectedItem();
-            String causas = txtCausasEnc.getText().trim();
-            String acciones = txtAccionesEnc.getText().trim();
+        btnAceptarAgregarRep.addActionListener(aceptarEvt -> {
+            String causas = txtCausasRep.getText().trim();
+            String acciones = txtAccionesRep.getText().trim();
 
-            if (fallaSeleccionada == null || causas.isEmpty() || acciones.isEmpty()) {
-                JOptionPane.showMessageDialog(ventanaAgregarFallaEnc, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+            if (causas.isEmpty() || acciones.isEmpty()) {
+                JOptionPane.showMessageDialog(ventanaAgregarFallaRep, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Crear la falla encontrada y añadirla a la lista temporal
-            OrdenTrabajo.FallaEncontrada fallaEnc = new OrdenTrabajo.FallaEncontrada(fallaSeleccionada.getId(), fallaSeleccionada.getDescripcion(), causas, acciones);
-            fallasEncontradasTemp.add(fallaEnc);
+            // Crear la falla reportada y añadirla a la lista temporal
+            OrdenTrabajo.FallaReportada fallaRep = new OrdenTrabajo.FallaReportada(causas, acciones);
+            fallasReportadasTemp.add(fallaRep);
 
             // Añadir la fila a la tabla de la ventana principal
-            modeloTablaFallasEnc.addRow(new Object[]{fallaSeleccionada.getId(), fallaSeleccionada.getDescripcion(), causas, acciones});
+            modeloTablaFallasRep.addRow(new Object[]{causas, acciones});
 
-            ventanaAgregarFallaEnc.dispose();
+            ventanaAgregarFallaRep.dispose();
         });
 
-        btnCancelarAgregar.addActionListener(cancelarEvt -> ventanaAgregarFallaEnc.dispose());
+        btnCancelarAgregarRep.addActionListener(cancelarEvt -> ventanaAgregarFallaRep.dispose());
 
-        ventanaAgregarFallaEnc.pack();
-        ventanaAgregarFallaEnc.setLocationRelativeTo(this);
-        ventanaAgregarFallaEnc.setVisible(true);
+        ventanaAgregarFallaRep.pack();
+        ventanaAgregarFallaRep.setLocationRelativeTo(this);
+        ventanaAgregarFallaRep.setVisible(true);
     }
 
-    private void registrarOrden() {
-        String idEquipoStr = txtIdEquipo.getText().trim();
-        if (idEquipoStr.isEmpty()) {
-             JOptionPane.showMessageDialog(this, "Por favor, busque y seleccione un equipo.", "Error", JOptionPane.WARNING_MESSAGE);
-             return;
-        }
-
-        try {
-            int idEquipo = Integer.parseInt(idEquipoStr);
-            NodoEquipo equipo = sistema.buscarEquipoPorId(idEquipo);
-            if (equipo == null) {
-                JOptionPane.showMessageDialog(this, "El equipo seleccionado ya no es válido.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Validar fechas
-            LocalDate fechaOrden, fechaEjecucion;
-            try {
-                fechaOrden = LocalDate.parse(txtFechaOrden.getText().trim());
-                fechaEjecucion = LocalDate.parse(txtFechaEjecucion.getText().trim());
-                if (fechaEjecucion.isBefore(fechaOrden)) {
-                    JOptionPane.showMessageDialog(this, "La fecha de ejecución debe ser igual o posterior a la fecha de la orden.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            } catch (java.time.format.DateTimeParseException ex) {
-                JOptionPane.showMessageDialog(this, "Por favor, ingrese fechas válidas en formato AAAA-MM-DD.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            String observaciones = txtObservaciones.getText().trim();
-
-            // Crear la nueva orden correctiva
-            int nuevoIdOrden = sistema.obtenerSiguienteIdOrden(); // Asumiendo que tienes este método en SistemaPrincipal
-            OrdenTrabajoCorrectiva nuevaOrden = new OrdenTrabajoCorrectiva(nuevoIdOrden, idEquipo, fechaOrden, fechaEjecucion);
-            nuevaOrden.setObservaciones(observaciones);
-
-            // Asignar las fallas reportadas y encontradas temporales a la orden
-            for (OrdenTrabajo.FallaReportada fr : fallasReportadasTemp) {
-                nuevaOrden.registrarFallaReportada(fr.getCausas(), fr.getAccionesTomadas());
-            }
-            for (OrdenTrabajo.FallaEncontrada fe : fallasEncontradasTemp) {
-                nuevaOrden.registrarFallaEncontrada(fe.getIdFalla(), fe.getDescripcionFalla(), fe.getCausas(), fe.getAccionesTomadas());
-            }
-
-            // Llamar al sistema para guardar la nueva orden
-            sistema.registrarOrdenCorrectiva(nuevaOrden); // Asumiendo que tienes este método
-
-            JOptionPane.showMessageDialog(this, "Orden correctiva ID " + nuevaOrden.getId() + " registrada exitosamente para el equipo ID " + idEquipo + ".", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-            // Opcional: Limpiar formulario y listas temporales
-            txtIdEquipo.setText("");
-            lblInfoEquipo.setText(" (Equipo no encontrado)");
-            txtFechaOrden.setValue(LocalDate.now());
-            txtFechaEjecucion.setValue(LocalDate.now().plusDays(1));
-            txtObservaciones.setText("");
-            modeloTablaFallasRep.setRowCount(0);
-            modeloTablaFallasEnc.setRowCount(0);
-            fallasReportadasTemp.clear();
-            fallasEncontradasTemp.clear();
-
-            // Cerrar ventana
-            // dispose(); // Opcional: dejarla abierta para registrar otra
-
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "ID de equipo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
+    public void eliminarFallaReportadaSeleccionada() {
+        int filaSeleccionada = tablaFallasRep.getSelectedRow();
+        if (filaSeleccionada >= 0) {
+            fallasReportadasTemp.remove(filaSeleccionada);
+            modeloTablaFallasRep.removeRow(filaSeleccionada);
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione una falla reportada de la lista para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
     }
 }

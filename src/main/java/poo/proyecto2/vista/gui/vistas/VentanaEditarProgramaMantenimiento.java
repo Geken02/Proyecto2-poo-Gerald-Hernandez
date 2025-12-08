@@ -3,7 +3,7 @@ package poo.proyecto2.vista.gui.vistas;
 import poo.proyecto2.modelo.equipos.NodoEquipo;
 import poo.proyecto2.modelo.mantenimiento.*;
 import poo.proyecto2.controlador.sistema.SistemaPrincipal;
-import poo.proyecto2.vista.gui.VentanaMenuPrincipal; // Ventana padre
+import poo.proyecto2.vista.gui.VentanaMenuPrincipal;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -16,25 +16,25 @@ import java.util.List;
 public class VentanaEditarProgramaMantenimiento extends JFrame {
 
     private SistemaPrincipal sistema;
-    private VentanaMenuPrincipal ventanaPadre; // Referencia a la ventana principal
+    private VentanaMenuPrincipal ventanaPadre;
 
     // Componentes (iguales o similares a la ventana de registro)
     private JLabel lblTitulo;
-    private JLabel lblIdEquipo; // Solo para mostrar, no editable
+    private JLabel lblIdEquipo; 
     private JTextField txtIdEquipo;
-    private JLabel lblNombreEquipo; // Para mostrar el nombre del equipo encontrado
+    private JLabel lblNombreEquipo; 
     private JLabel lblFasesTitulo;
     private JScrollPane scrollTablaFases;
     private JTable tablaFases;
     private DefaultTableModel modeloTablaFases;
     private JButton btnAgregarFase;
-    private JButton btnEditarFase; // Nuevo botón
-    private JButton btnEliminarFase; // Nuevo botón
+    private JButton btnEditarFase;
+    private JButton btnEliminarFase; 
     private JButton btnGuardarPrograma;
     private JButton btnCancelar;
 
     // Ventana secundaria para agregar/editar fase (ahora es un JDialog)
-    private JDialog ventanaFase; // Cambiado de JFrame a JDialog
+    private JDialog ventanaFase; 
     private JTextField txtFrecuenciaFase;
     private JComboBox<TipoFrecuencia> cmbTipoFrecuenciaFase;
     private JSpinner spnCiclosFase;
@@ -64,7 +64,7 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
     private NodoEquipo equipoDelPrograma;
 
     // Indice temporal de la fase seleccionada para edición
-    private int indiceFaseAErEditar = -1; // -1 significa que no hay una fase seleccionada para editar
+    private int indiceFaseAErEditar = -1; 
 
     public VentanaEditarProgramaMantenimiento(SistemaPrincipal sistema, VentanaMenuPrincipal ventanaPadre, int idEquipo) {
         this.sistema = sistema;
@@ -93,7 +93,7 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
         }
 
         inicializarComponentes();
-        cargarDatosIniciales(); // Carga los datos del programa original en la interfaz
+        cargarDatosIniciales(); 
         configurarEventos();
         setTitle("Editar Programa de Mantenimiento - Equipo ID: " + idEquipo);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -107,11 +107,11 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
 
         // --- Panel Superior: Información del Equipo (no editable) ---
         JPanel panelInfoEquipo = new JPanel(new FlowLayout());
-        lblIdEquipo = new JLabel("ID del Equipo:"); // Etiqueta
-        txtIdEquipo = new JTextField(String.valueOf(equipoDelPrograma.getId()), 10); // Campo con ID
-        txtIdEquipo.setEditable(false); // No editable
-        txtIdEquipo.setBackground(new Color(240, 240, 240)); // Color gris claro
-        lblNombreEquipo = new JLabel(" (" + equipoDelPrograma.getDescripcion() + ")"); // Nombre del equipo
+        lblIdEquipo = new JLabel("ID del Equipo:"); 
+        txtIdEquipo = new JTextField(String.valueOf(equipoDelPrograma.getId()), 10); 
+        txtIdEquipo.setEditable(false); 
+        txtIdEquipo.setBackground(new Color(240, 240, 240)); 
+        lblNombreEquipo = new JLabel(" (" + equipoDelPrograma.getDescripcion() + ")"); 
         lblNombreEquipo.setFont(lblNombreEquipo.getFont().deriveFont(Font.ITALIC));
 
         panelInfoEquipo.add(lblIdEquipo);
@@ -127,7 +127,7 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
         modeloTablaFases = new DefaultTableModel(COLUMNAS_FASES, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // No se edita directamente la tabla
+                return false; 
             }
         };
         tablaFases = new JTable(modeloTablaFases);
@@ -143,14 +143,14 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
         // --- Panel Inferior: Botones ---
         JPanel panelBotones = new JPanel(new FlowLayout());
         btnAgregarFase = new JButton("Agregar Fase");
-        btnEditarFase = new JButton("Editar Fase"); // <-- Nuevo botón
-        btnEliminarFase = new JButton("Eliminar Fase"); // <-- Nuevo botón
+        btnEditarFase = new JButton("Editar Fase"); 
+        btnEliminarFase = new JButton("Eliminar Fase"); 
         btnGuardarPrograma = new JButton("Guardar Cambios");
         btnCancelar = new JButton("Cancelar");
 
         panelBotones.add(btnAgregarFase);
-        panelBotones.add(btnEditarFase); // <-- Añadir botón
-        panelBotones.add(btnEliminarFase); // <-- Añadir botón
+        panelBotones.add(btnEditarFase); 
+        panelBotones.add(btnEliminarFase); 
         panelBotones.add(btnGuardarPrograma);
         panelBotones.add(btnCancelar);
 
@@ -159,14 +159,14 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
 
     private void cargarDatosIniciales() {
         // Carga las fases del programa original (o de la lista temporal si ya se modificó algo) en la tabla
-        modeloTablaFases.setRowCount(0); // Limpiar tabla
+        modeloTablaFases.setRowCount(0); 
         for (FaseMantenimiento fase : fasesTemporales) {
             Object[] fila = {
                 fase.getMedidorFrecuencia() + " " + fase.getTipoFrecuencia(),
                 fase.getTipoFrecuencia(),
                 fase.getCantidadCiclos() == 0 ? "Recurrente" : fase.getCantidadCiclos(),
                 fase.getHorasEstimadas(),
-                fase.getIdsTareasMaestras().size() + " tareas" // Mostrar cantidad
+                fase.getIdsTareasMaestras().size() + " tareas" 
             };
             modeloTablaFases.addRow(fila);
         }
@@ -174,16 +174,16 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
 
     private void configurarEventos() {
         btnAgregarFase.addActionListener(e -> {
-            indiceFaseAErEditar = -1; // Indicar que no es edición
-            abrirVentanaAgregarFase(); // Llama al método que crea el JDialog
+            indiceFaseAErEditar = -1; 
+            abrirVentanaAgregarFase(); 
         });
 
         btnEditarFase.addActionListener(e -> {
             int filaSeleccionada = tablaFases.getSelectedRow();
             if (filaSeleccionada >= 0) {
-                indiceFaseAErEditar = filaSeleccionada; // Guardar índice de la fase a editar
-                FaseMantenimiento fase = fasesTemporales.get(filaSeleccionada); // Obtener la fase de la lista temporal
-                abrirVentanaAgregarFase(fase); // Pasa la fase para pre-cargarla
+                indiceFaseAErEditar = filaSeleccionada; 
+                FaseMantenimiento fase = fasesTemporales.get(filaSeleccionada); 
+                abrirVentanaAgregarFase(fase); 
             } else {
                 JOptionPane.showMessageDialog(this, "Por favor, seleccione una fase de la tabla para editar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             }
@@ -200,8 +200,8 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
                         JOptionPane.WARNING_MESSAGE
                 );
                 if (respuesta == JOptionPane.YES_OPTION) {
-                    fasesTemporales.remove(filaSeleccionada); // Remover de la lista temporal
-                    modeloTablaFases.removeRow(filaSeleccionada); // Remover de la tabla visual
+                    fasesTemporales.remove(filaSeleccionada);
+                    modeloTablaFases.removeRow(filaSeleccionada); 
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Por favor, seleccione una fase de la tabla para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
@@ -219,28 +219,22 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
             for (FaseMantenimiento fase : fasesTemporales) {
                 nuevoPrograma.agregarFase(fase);
             }
-
-            // *** LLAMAR AL SISTEMA PARA ACTUALIZAR EL PROGRAMA ***
-            // El sistema debe tener un método que reemplace el programa existente para el equipo
-            // Por ejemplo: sistema.actualizarPrograma(nuevoPrograma);
-            // O si no existe, crearlo: sistema.guardarPrograma(nuevoPrograma); // Este método debe manejar la sobreescritura si ya existe
-            // Suponiendo que guardarPrograma sobrescribe si ya existe:
-            boolean guardado = sistema.guardarPrograma(nuevoPrograma); // <-- Usar el método existente
+            
+            boolean guardado = sistema.guardarPrograma(nuevoPrograma); 
 
             if (guardado) {
                 JOptionPane.showMessageDialog(this, "Programa de mantenimiento actualizado exitosamente para el equipo ID: " + equipoDelPrograma.getId() + ".", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                // Opcional: Cerrar la ventana después de guardar
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo guardar el programa actualizado en el sistema.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        btnCancelar.addActionListener(e -> dispose()); // Cierra la ventana sin guardar
+        btnCancelar.addActionListener(e -> dispose()); 
     }
 
     private void abrirVentanaAgregarFase() {
-        abrirVentanaAgregarFase(null); // Llama a la versión con parámetro null (nueva fase)
+        abrirVentanaAgregarFase(null); 
     }
 
     // Versión sobrecargada para editar una fase existente
@@ -258,9 +252,9 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
 
         // --- Panel Central: Formulario y Tareas ---
         JSplitPane splitFase = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitFase.setResizeWeight(0.5); // División 50-50
+        splitFase.setResizeWeight(0.5); 
 
-        // --- Panel Izquierdo: Formulario de Fase (CORREGIDO) ---
+        // --- Panel Izquierdo: Formulario de Fase 
         JPanel panelForm = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -271,7 +265,7 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
         panelForm.add(new JLabel("Frecuencia:"), gbc);
 
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
-        txtFrecuenciaFase = new JTextField(3); // Reducido a 3 caracteres
+        txtFrecuenciaFase = new JTextField(3); 
         txtFrecuenciaFase.setText("1");
         panelForm.add(txtFrecuenciaFase, gbc);
 
@@ -407,11 +401,11 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
         // --- Eventos Ventana Fase ---
         btnAgregarTarea.addActionListener(e -> {
             int[] indices = listaTareasDisponibles.getSelectedIndices();
-            for (int i = indices.length - 1; i >= 0; i--) { // Iterar backwards para no alterar índices al remover
+            for (int i = indices.length - 1; i >= 0; i--) { 
                 TareaMantenimiento tarea = modeloTareasDisp.getElementAt(indices[i]);
-                if (!modeloTareasSel.contains(tarea)) { // Prevenir duplicados
+                if (!modeloTareasSel.contains(tarea)) { 
                     modeloTareasSel.addElement(tarea);
-                    modeloTareasDisp.remove(indices[i]); // Remover de la lista de disponibles
+                    modeloTareasDisp.remove(indices[i]); 
                 }
             }
             listaTareasDisponibles.clearSelection();
@@ -421,8 +415,8 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
             int[] indices = listaTareasSeleccionadas.getSelectedIndices();
             for (int i = indices.length - 1; i >= 0; i--) {
                 TareaMantenimiento tarea = modeloTareasSel.getElementAt(indices[i]);
-                modeloTareasSel.remove(indices[i]); // Remover de la lista de seleccionadas
-                modeloTareasDisp.addElement(tarea); // Añadir de vuelta a la lista de disponibles
+                modeloTareasSel.remove(indices[i]); 
+                modeloTareasDisp.addElement(tarea);
             }
             listaTareasSeleccionadas.clearSelection();
         });
@@ -441,7 +435,7 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
                 String partes = txtPartesFase.getText().trim();
                 String herramientas = txtHerramientasFase.getText().trim();
                 String personal = txtPersonalFase.getText().trim();
-                float horas = ((Number) spnHorasFase.getValue()).floatValue(); // Casting seguro
+                float horas = ((Number) spnHorasFase.getValue()).floatValue();
 
                 // Crear la nueva fase o actualizar la existente
                 FaseMantenimiento nuevaFase = new FaseMantenimiento(tipoFreq, frecuencia, ciclos, partes, herramientas, personal, horas);
@@ -449,14 +443,12 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
                 // --- AÑADIR LAS TAREAS SELECCIONADAS A LA FASE ---
                 for (int i = 0; i < modeloTareasSel.getSize(); i++) {
                     TareaMantenimiento tarea = modeloTareasSel.getElementAt(i);
-                    nuevaFase.agregarTareaMaestra(tarea.getId()); // Añadir ID a la fase
+                    nuevaFase.agregarTareaMaestra(tarea.getId()); 
                 }
-                // --- FIN AÑADIR TAREAS ---
 
                 if (indiceFaseAErEditar != -1) {
-                    // ESTAMOS EDITANDO: Reemplazar la fase en la lista temporal
                     fasesTemporales.set(indiceFaseAErEditar, nuevaFase);
-                    // Actualizar la fila en la tabla principal
+
                     modeloTablaFases.setValueAt(frecuencia + " " + tipoFreq, indiceFaseAErEditar, 0);
                     modeloTablaFases.setValueAt(tipoFreq, indiceFaseAErEditar, 1);
                     modeloTablaFases.setValueAt(ciclos == 0 ? "Recurrente" : ciclos, indiceFaseAErEditar, 2);
@@ -464,21 +456,19 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
                     modeloTablaFases.setValueAt(modeloTareasSel.getSize() + " tareas", indiceFaseAErEditar, 4);
                     System.out.println("DEBUG: Fase en índice " + indiceFaseAErEditar + " actualizada en la lista temporal y en la tabla.");
                 } else {
-                    // ESTAMOS AGREGANDO: Añadir la nueva fase a la lista temporal
                     fasesTemporales.add(nuevaFase);
-                    // Añadir la fila a la tabla principal
                     Object[] filaTabla = {
                         frecuencia + " " + tipoFreq,
                         tipoFreq,
                         ciclos == 0 ? "Recurrente" : ciclos,
                         horas,
-                        modeloTareasSel.getSize() + " tareas" // Mostrar cantidad
+                        modeloTareasSel.getSize() + " tareas"
                     };
                     modeloTablaFases.addRow(filaTabla);
                     System.out.println("DEBUG: Nueva fase añadida a la lista temporal y a la tabla.");
                 }
 
-                ventanaFase.dispose(); // Cierra la ventana de fase
+                ventanaFase.dispose(); 
 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(ventanaFase, "Por favor, ingrese valores numéricos válidos para Frecuencia, Ciclos y Horas.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -486,7 +476,7 @@ public class VentanaEditarProgramaMantenimiento extends JFrame {
         });
 
         ventanaFase.setSize(900, 600);
-        ventanaFase.setLocationRelativeTo(this); // Centrado en la ventana padre
-        ventanaFase.setVisible(true); // Mostrar el dialogo
+        ventanaFase.setLocationRelativeTo(this);
+        ventanaFase.setVisible(true); 
     }
 }

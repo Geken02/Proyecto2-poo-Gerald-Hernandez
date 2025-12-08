@@ -3,6 +3,7 @@ package poo.proyecto2.vista.gui.vistas;
 import poo.proyecto2.modelo.mantenimiento.*;
 import poo.proyecto2.controlador.sistema.SistemaPrincipal;
 import poo.proyecto2.vista.gui.VentanaMenuPrincipal;
+import poo.proyecto2.controlador.ControladorIniciarOrdenCorrectiva;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,25 +15,28 @@ import java.time.format.DateTimeFormatter;
 public class VentanaIniciarOrdenCorrectiva extends JFrame {
 
     private SistemaPrincipal sistema;
-    private VentanaMenuPrincipal ventanaPadre; // Opcional
+    private VentanaMenuPrincipal ventanaPadre;
 
     // Componentes de la interfaz
     private JLabel lblTitulo;
     private JLabel lblIdOrden;
     private JTextField txtIdOrden;
     private JButton btnBuscarOrden;
-    private JLabel lblInfoOrden; // Muestra info básica de la orden encontrada
+    private JLabel lblInfoOrden; 
     private JLabel lblFechaInicio;
-    private JFormattedTextField txtFechaInicio; // Campo para ingresar la fecha de inicio real
+    private JFormattedTextField txtFechaInicio;
     private JButton btnIniciarOrden;
     private JButton btnCancelar;
 
-    // Variable temporal para la orden actual
-    private OrdenTrabajoCorrectiva ordenActual;
+    // Referencia al controlador
+    private ControladorIniciarOrdenCorrectiva controlador;
 
     public VentanaIniciarOrdenCorrectiva(SistemaPrincipal sistema, VentanaMenuPrincipal ventanaPadre) {
         this.sistema = sistema;
         this.ventanaPadre = ventanaPadre;
+        // Crear el controlador pasando el modelo y la vista
+        this.controlador = new ControladorIniciarOrdenCorrectiva(sistema, this);
+
         inicializarComponentes();
         configurarEventos();
         setTitle("Iniciar Orden de Trabajo Correctiva");
@@ -63,9 +67,9 @@ public class VentanaIniciarOrdenCorrectiva extends JFrame {
         panelFormulario.add(lblIdOrden, gbc);
 
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
-        txtIdOrden = new JTextField(15); // <-- Aumentado de 10 a 15
-        txtIdOrden.setMinimumSize(new Dimension(100, 25)); // Tamaño mínimo
-        txtIdOrden.setPreferredSize(new Dimension(150, 25)); // Tamaño preferido
+        txtIdOrden = new JTextField(15);
+        txtIdOrden.setMinimumSize(new Dimension(100, 25));
+        txtIdOrden.setPreferredSize(new Dimension(150, 25));
         panelFormulario.add(txtIdOrden, gbc);
 
         gbc.gridx = 2; gbc.fill = GridBagConstraints.NONE;
@@ -84,10 +88,10 @@ public class VentanaIniciarOrdenCorrectiva extends JFrame {
 
         gbc.gridx = 1; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.HORIZONTAL;
         txtFechaInicio = new JFormattedTextField(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        txtFechaInicio.setValue(LocalDate.now()); // Fecha por defecto
-        txtFechaInicio.setEnabled(false); // Deshabilitado hasta que se busque una orden válida
+        txtFechaInicio.setValue(LocalDate.now()); 
+        txtFechaInicio.setEnabled(false); 
         panelFormulario.add(txtFechaInicio, gbc);
-        gbc.gridwidth = 1; // Resetear gridwidth
+        gbc.gridwidth = 1; 
 
         add(panelFormulario, BorderLayout.CENTER);
 
@@ -95,96 +99,36 @@ public class VentanaIniciarOrdenCorrectiva extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout());
         btnIniciarOrden = new JButton("Iniciar Orden");
         btnCancelar = new JButton("Cancelar");
-        btnIniciarOrden.setEnabled(false); // Deshabilitado hasta que se busque una orden válida
+        btnIniciarOrden.setEnabled(false); 
         panelBotones.add(btnIniciarOrden);
         panelBotones.add(btnCancelar);
         add(panelBotones, BorderLayout.SOUTH);
     }
 
     private void configurarEventos() {
-        btnBuscarOrden.addActionListener(e -> {
-            String idStr = txtIdOrden.getText().trim();
-            if (!idStr.isEmpty()) {
-                try {
-                    int id = Integer.parseInt(idStr);
-                    OrdenTrabajo orden = sistema.buscarOrdenPorId(id);
-                    if (orden != null) {
-                        if (orden instanceof OrdenTrabajoCorrectiva) { // <-- Verificar tipo correctivo
-                            OrdenTrabajoCorrectiva ordenCorr = (OrdenTrabajoCorrectiva) orden;
-                            // Permitir iniciar si está en PENDIENTE
-                            if (ordenCorr.getEstado() == OrdenTrabajo.EstadoOrden.PENDIENTE) {
-                                lblInfoOrden.setText(" (Orden ID: " + orden.getId() + " - Estado: " + orden.getEstado() + " - Equipo ID: " + orden.getIdEquipo() + ")");
-                                // Guardar referencia temporal
-                                ordenActual = ordenCorr;
-                                // Habilitar campo de fecha y botón de iniciar
-                                txtFechaInicio.setEnabled(true);
-                                btnIniciarOrden.setEnabled(true);
-                            } else {
-                                JOptionPane.showMessageDialog(this, "La orden ID " + id + " no está en estado PENDIENTE. No se puede iniciar.", "Error", JOptionPane.ERROR_MESSAGE);
-                                lblInfoOrden.setText(" (Orden no válida para iniciar)");
-                                txtFechaInicio.setEnabled(false);
-                                btnIniciarOrden.setEnabled(false);
-                                ordenActual = null; // Limpiar referencia
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(this, "El ID " + id + " pertenece a una orden de tipo incorrecto (no Correctiva).", "Error", JOptionPane.ERROR_MESSAGE);
-                            lblInfoOrden.setText(" (Orden no es Correctiva)");
-                            txtFechaInicio.setEnabled(false);
-                            btnIniciarOrden.setEnabled(false);
-                            ordenActual = null; // Limpiar referencia
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(this, "No se encontró una orden con ID: " + id, "Error", JOptionPane.ERROR_MESSAGE);
-                        lblInfoOrden.setText(" (Orden no encontrada)");
-                        txtFechaInicio.setEnabled(false);
-                        btnIniciarOrden.setEnabled(false);
-                        ordenActual = null; // Limpiar referencia
-                    }
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Por favor, ingrese un ID de orden válido.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, ingrese un ID de orden.", "Error", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
-        btnIniciarOrden.addActionListener(e -> {
-            if (ordenActual == null) {
-                JOptionPane.showMessageDialog(this, "No hay una orden seleccionada para iniciar.", "Error", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            // Validar campos requeridos
-            if (txtFechaInicio.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos obligatorios (marcados con *).", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            LocalDate fechaInicio;
-            try {
-                fechaInicio = LocalDate.parse(txtFechaInicio.getText().trim());
-            } catch (java.time.format.DateTimeParseException ex) {
-                JOptionPane.showMessageDialog(this, "Por favor, ingrese una fecha de inicio válida en formato AAAA-MM-DD.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Llamar al sistema para iniciar la orden
-            boolean iniciada = sistema.iniciarOrdenCorrectiva(ordenActual.getId(), fechaInicio); // <-- Usar método correctivo
-
-            if (iniciada) {
-                JOptionPane.showMessageDialog(this, "Orden ID " + ordenActual.getId() + " iniciada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                // Limpiar formulario y deshabilitar campos
-                txtIdOrden.setText("");
-                lblInfoOrden.setText(" (Orden no encontrada o no válida para iniciar)");
-                txtFechaInicio.setValue(LocalDate.now());
-                txtFechaInicio.setEnabled(false);
-                btnIniciarOrden.setEnabled(false);
-                ordenActual = null; // Limpiar referencia
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudo iniciar la orden. Puede que ya esté iniciada, completada o cancelada, o hubo un error al guardar.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        btnCancelar.addActionListener(e -> dispose()); // Cierra la ventana
+        btnBuscarOrden.addActionListener(e -> controlador.buscarOrden());
+        btnIniciarOrden.addActionListener(e -> controlador.iniciarOrden());
+        btnCancelar.addActionListener(e -> controlador.cancelar());
     }
+
+    // --- Métodos para que el controlador interactúe con la vista ---
+    public JTextField getTxtIdOrden() { return txtIdOrden; }
+    public JFormattedTextField getTxtFechaInicio() { return txtFechaInicio; }
+
+    public void mostrarInfoOrden(String texto) { lblInfoOrden.setText(texto); }
+    public void mostrarMensaje(String mensaje, String titulo, int tipo) { JOptionPane.showMessageDialog(this, mensaje, titulo, tipo); }
+
+    public void habilitarCamposIniciar(boolean habilitar) {
+        txtFechaInicio.setEnabled(habilitar);
+        btnIniciarOrden.setEnabled(habilitar);
+    }
+
+    public void limpiarFormulario() {
+        txtIdOrden.setText("");
+        lblInfoOrden.setText(" (Orden no encontrada o no válida para iniciar)");
+        txtFechaInicio.setValue(LocalDate.now());
+    }
+
+    public void cerrarVentana() { this.dispose(); }
+    // ---
 }

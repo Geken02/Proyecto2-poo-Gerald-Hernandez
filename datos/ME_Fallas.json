@@ -18,5 +18,9 @@
   {
     "id": 5,
     "descripcion": "Fallo en el sistema de poleas"
+  },
+  {
+    "id": 6,
+    "descripcion": "Fallo en la fuente de poder"
   }
 ]

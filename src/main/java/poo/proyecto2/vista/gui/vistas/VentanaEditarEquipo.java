@@ -4,10 +4,9 @@ import poo.proyecto2.modelo.equipos.NodoEquipo;
 import poo.proyecto2.modelo.EstadoEquipo;
 import poo.proyecto2.controlador.sistema.SistemaPrincipal;
 import poo.proyecto2.vista.gui.VentanaMenuPrincipal;
+import poo.proyecto2.controlador.ControladorEditarEquipo;
 
 import javax.swing.*;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,14 +16,14 @@ import java.time.format.DateTimeFormatter;
 public class VentanaEditarEquipo extends JFrame {
 
     private SistemaPrincipal sistema;
-    private VentanaMenuPrincipal ventanaPadre; // Opcional: para refrescar datos si es necesario
-    private NodoEquipo equipoAErEditar; // Referencia al equipo que se va a editar
+    private VentanaMenuPrincipal ventanaPadre; 
+    private NodoEquipo equipoAErEditar; 
 
     // Componentes de la interfaz
     private JLabel lblTitulo;
     private JLabel lblIdEquipo;
-    private JTextField txtIdEquipo;
-    private JLabel lblInfoEquipo; // Muestra ID y Descripción del equipo a editar
+    private JTextField txtIdEquipo; 
+    private JLabel lblInfoEquipo; 
     private JLabel lblDescripcion;
     private JTextField txtDescripcion;
     private JLabel lblTipo;
@@ -36,17 +35,17 @@ public class VentanaEditarEquipo extends JFrame {
     private JLabel lblSerie;
     private JTextField txtSerie;
     private JLabel lblFechaAdquisicion;
-    private JFormattedTextField txtFechaAdquisicion;
+    private JTextField txtFechaAdquisicion;
     private JLabel lblFechaPuestaEnServicio;
-    private JFormattedTextField txtFechaPuestaEnServicio;
+    private JTextField txtFechaPuestaEnServicio;
     private JLabel lblMesesVidaUtil;
-    private JFormattedTextField txtMesesVidaUtil;
+    private JTextField txtMesesVidaUtil; 
     private JLabel lblEstado;
     private JComboBox<EstadoEquipo> cmbEstado;
     private JLabel lblCostoInicial;
-    private JFormattedTextField txtCostoInicial;
-    private JLabel lblEquipoPrincipal;
-    private JTextField txtEquipoPrincipal; // Campo para mostrar/posiblemente editar el ID del equipo padre
+    private JTextField txtCostoInicial; 
+    private JLabel lblEquipoPrincipal; 
+    private JTextField txtEquipoPrincipal;
     private JLabel lblEspecificacionesTecnicas;
     private JTextArea txtEspecificacionesTecnicas;
     private JScrollPane scrollEspecTecnicas;
@@ -57,17 +56,22 @@ public class VentanaEditarEquipo extends JFrame {
     private JButton btnGuardar;
     private JButton btnCancelar;
 
+    // Referencia al controlador
+    private ControladorEditarEquipo controlador;
+
     public VentanaEditarEquipo(SistemaPrincipal sistema, VentanaMenuPrincipal ventanaPadre, NodoEquipo equipoAErEditar) {
         this.sistema = sistema;
         this.ventanaPadre = ventanaPadre;
         this.equipoAErEditar = equipoAErEditar;
+        // Crear el controlador pasando el modelo, la vista y el equipo a editar
+        this.controlador = new ControladorEditarEquipo(sistema, this, equipoAErEditar);
         inicializarComponentes();
-        cargarDatosEnFormulario(); // Carga los datos del equipo a editar
+        cargarDatosEnFormulario(); 
         configurarEventos();
         setTitle("Editar Equipo ID: " + equipoAErEditar.getId());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setResizable(true);
-        setSize(700, 700); // Tamaño más grande para acomodar todos los campos
+        setResizable(false); 
+        pack(); 
         setLocationRelativeTo(ventanaPadre);
     }
 
@@ -86,7 +90,7 @@ public class VentanaEditarEquipo extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Fila 0: ID y Info Equipo
+        // Fila 0: ID y Info Equipo (solo lectura)
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 4; gbc.fill = GridBagConstraints.HORIZONTAL;
         lblIdEquipo = new JLabel("ID del Equipo:"); // No editable
         txtIdEquipo = new JTextField(String.valueOf(equipoAErEditar.getId()));
@@ -159,7 +163,7 @@ public class VentanaEditarEquipo extends JFrame {
         panelFormulario.add(lblFechaAdquisicion, gbc);
 
         gbc.gridx = 1; gbc.gridwidth = 3; gbc.fill = GridBagConstraints.HORIZONTAL;
-        txtFechaAdquisicion = new JFormattedTextField(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        txtFechaAdquisicion = new JTextField(10); 
         panelFormulario.add(txtFechaAdquisicion, gbc);
         gbc.gridwidth = 1; // Resetear gridwidth
 
@@ -169,7 +173,7 @@ public class VentanaEditarEquipo extends JFrame {
         panelFormulario.add(lblFechaPuestaEnServicio, gbc);
 
         gbc.gridx = 1; gbc.gridwidth = 3; gbc.fill = GridBagConstraints.HORIZONTAL;
-        txtFechaPuestaEnServicio = new JFormattedTextField(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        txtFechaPuestaEnServicio = new JTextField(10); 
         panelFormulario.add(txtFechaPuestaEnServicio, gbc);
         gbc.gridwidth = 1; // Resetear gridwidth
 
@@ -179,10 +183,7 @@ public class VentanaEditarEquipo extends JFrame {
         panelFormulario.add(lblMesesVidaUtil, gbc);
 
         gbc.gridx = 1; gbc.gridwidth = 3; gbc.fill = GridBagConstraints.HORIZONTAL;
-        NumberFormatter formatterMeses = new NumberFormatter();
-        formatterMeses.setValueClass(Integer.class);
-        formatterMeses.setMinimum(1);
-        txtMesesVidaUtil = new JFormattedTextField(formatterMeses);
+        txtMesesVidaUtil = new JTextField(10); // <-- Cambiado a JTextField
         panelFormulario.add(txtMesesVidaUtil, gbc);
         gbc.gridwidth = 1; // Resetear gridwidth
 
@@ -202,10 +203,7 @@ public class VentanaEditarEquipo extends JFrame {
         panelFormulario.add(lblCostoInicial, gbc);
 
         gbc.gridx = 1; gbc.gridwidth = 3; gbc.fill = GridBagConstraints.HORIZONTAL;
-        NumberFormatter formatterCosto = new NumberFormatter(new java.text.DecimalFormat("#,##0.00"));
-        formatterCosto.setValueClass(Double.class);
-        formatterCosto.setMinimum(0.01);
-        txtCostoInicial = new JFormattedTextField(formatterCosto);
+        txtCostoInicial = new JTextField(15);
         panelFormulario.add(txtCostoInicial, gbc);
         gbc.gridwidth = 1; // Resetear gridwidth
 
@@ -216,7 +214,7 @@ public class VentanaEditarEquipo extends JFrame {
 
         gbc.gridx = 1; gbc.gridwidth = 3; gbc.fill = GridBagConstraints.HORIZONTAL;
         txtEquipoPrincipal = new JTextField(String.valueOf(equipoAErEditar.getEquipoPrincipal()));
-        txtEquipoPrincipal.setEditable(false); // Campo de solo lectura
+        txtEquipoPrincipal.setEditable(false);
         txtEquipoPrincipal.setBackground(new Color(240, 240, 240));
         panelFormulario.add(txtEquipoPrincipal, gbc);
         gbc.gridwidth = 1; // Resetear gridwidth
@@ -261,125 +259,44 @@ public class VentanaEditarEquipo extends JFrame {
         txtSerie.setText(equipoAErEditar.getSerie());
 
         if (equipoAErEditar.getFechaAdquisicion() != null) {
-            txtFechaAdquisicion.setValue(equipoAErEditar.getFechaAdquisicion());
+            txtFechaAdquisicion.setText(equipoAErEditar.getFechaAdquisicion().format(DateTimeFormatter.ISO_LOCAL_DATE)); // <-- setText en JTextField
         } else {
-            txtFechaAdquisicion.setValue(null);
+            txtFechaAdquisicion.setText(""); 
         }
 
         if (equipoAErEditar.getFechaPuestaEnServicio() != null) {
-            txtFechaPuestaEnServicio.setValue(equipoAErEditar.getFechaPuestaEnServicio());
+            txtFechaPuestaEnServicio.setText(equipoAErEditar.getFechaPuestaEnServicio().format(DateTimeFormatter.ISO_LOCAL_DATE)); // <-- setText en JTextField
         } else {
-            txtFechaPuestaEnServicio.setValue(null);
+            txtFechaPuestaEnServicio.setText("");
         }
 
-        txtMesesVidaUtil.setValue(equipoAErEditar.getMesesVidaUtil());
+        txtMesesVidaUtil.setText(String.valueOf(equipoAErEditar.getMesesVidaUtil()));
         cmbEstado.setSelectedItem(equipoAErEditar.getEstado());
-        txtCostoInicial.setValue(equipoAErEditar.getCostoInicial());
-        // txtEquipoPrincipal.setValue(equipoAErEditar.getEquipoPrincipal()); // Ya se inicializó en el constructor del campo
+        txtCostoInicial.setText(String.valueOf(equipoAErEditar.getCostoInicial()));
         txtEspecificacionesTecnicas.setText(equipoAErEditar.getEspecificacionesTecnicas() != null ? equipoAErEditar.getEspecificacionesTecnicas() : "");
         txtInformacionGarantia.setText(equipoAErEditar.getInformacionGarantia() != null ? equipoAErEditar.getInformacionGarantia() : "");
     }
 
     private void configurarEventos() {
-        btnGuardar.addActionListener(e -> guardarCambios());
-
-        btnCancelar.addActionListener(e -> dispose()); // Cierra la ventana sin guardar
+        btnGuardar.addActionListener(e -> controlador.guardarCambios(ventanaPadre));
+        btnCancelar.addActionListener(e -> controlador.cancelar()); 
     }
 
-    private void guardarCambios() {
-        // 1. Validar campos requeridos (marcados con *)
-        if (txtDescripcion.getText().trim().isEmpty() ||
-            txtTipo.getText().trim().isEmpty() ||
-            txtUbicacion.getText().trim().isEmpty() ||
-            txtFabricante.getText().trim().isEmpty() ||
-            txtSerie.getText().trim().isEmpty() ||
-            txtFechaAdquisicion.getText().trim().isEmpty() ||
-            txtFechaPuestaEnServicio.getText().trim().isEmpty() ||
-            txtMesesVidaUtil.getText().trim().isEmpty() ||
-            txtCostoInicial.getText().trim().isEmpty()) {
+    // --- Métodos para que el controlador interactúe con la vista ---
+    public JTextField getTxtDescripcion() { return txtDescripcion; }
+    public JTextField getTxtTipo() { return txtTipo; }
+    public JTextField getTxtUbicacion() { return txtUbicacion; }
+    public JTextField getTxtFabricante() { return txtFabricante; }
+    public JTextField getTxtSerie() { return txtSerie; }
+    public JTextField getTxtFechaAdquisicion() { return txtFechaAdquisicion; }
+    public JTextField getTxtFechaPuestaEnServicio() { return txtFechaPuestaEnServicio; }
+    public JTextField getTxtMesesVidaUtil() { return txtMesesVidaUtil; }
+    public JComboBox<EstadoEquipo> getCmbEstado() { return cmbEstado; }
+    public JTextField getTxtCostoInicial() { return txtCostoInicial; }
+    public JTextArea getTxtEspecificacionesTecnicas() { return txtEspecificacionesTecnicas; }
+    public JTextArea getTxtInformacionGarantia() { return txtInformacionGarantia; }
 
-            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos obligatorios (marcados con *).", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // 2. Obtener datos del formulario
-        String descripcion = txtDescripcion.getText().trim();
-        String tipo = txtTipo.getText().trim();
-        String ubicacion = txtUbicacion.getText().trim();
-        String fabricante = txtFabricante.getText().trim();
-        String serie = txtSerie.getText().trim();
-
-        LocalDate fechaAdq, fechaPuestaEnServ;
-        try {
-            fechaAdq = LocalDate.parse(txtFechaAdquisicion.getText().trim());
-            fechaPuestaEnServ = LocalDate.parse(txtFechaPuestaEnServicio.getText().trim());
-            if (fechaPuestaEnServ.isBefore(fechaAdq)) {
-                JOptionPane.showMessageDialog(this, "La fecha de puesta en servicio debe ser igual o posterior a la fecha de adquisición.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } catch (java.time.format.DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese fechas válidas en formato AAAA-MM-DD.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        int mesesVidaUtil;
-        try {
-            mesesVidaUtil = ((Number) txtMesesVidaUtil.getValue()).intValue();
-            if (mesesVidaUtil <= 0) {
-                JOptionPane.showMessageDialog(this, "Los meses de vida útil deben ser un número positivo.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese un número válido para meses de vida útil.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        EstadoEquipo estado = (EstadoEquipo) cmbEstado.getSelectedItem();
-
-        double costoInicial;
-        try {
-            costoInicial = ((Number) txtCostoInicial.getValue()).doubleValue();
-            if (costoInicial <= 0) {
-                JOptionPane.showMessageDialog(this, "El costo inicial debe ser un número positivo.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese un número válido para el costo inicial.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String especTecnicas = txtEspecificacionesTecnicas.getText().trim();
-        String infoGarantia = txtInformacionGarantia.getText().trim();
-
-        // 3. Actualizar los datos del objeto equipoAErEditar en memoria
-        equipoAErEditar.setDescripcion(descripcion);
-        equipoAErEditar.setTipo(tipo);
-        equipoAErEditar.setUbicacion(ubicacion);
-        equipoAErEditar.setFabricante(fabricante);
-        equipoAErEditar.setSerie(serie);
-        equipoAErEditar.setFechaAdquisicion(fechaAdq);
-        equipoAErEditar.setFechaPuestaEnServicio(fechaPuestaEnServ);
-        equipoAErEditar.setMesesVidaUtil(mesesVidaUtil);
-        equipoAErEditar.setEstado(estado);
-        equipoAErEditar.setCostoInicial(costoInicial);
-        equipoAErEditar.setEspecificacionesTecnicas(especTecnicas.isEmpty() ? null : especTecnicas);
-        equipoAErEditar.setInformacionGarantia(infoGarantia.isEmpty() ? null : infoGarantia);
-
-        // 4. Llamar al sistema para guardar los cambios en disco
-        // Usamos el metodo actualizarEquipo del SistemaPrincipal, pasando el ID del equipo actual
-        boolean actualizado = sistema.actualizarEquipo(equipoAErEditar.getId(), descripcion, tipo, ubicacion,
-                fabricante, serie, fechaAdq, fechaPuestaEnServ, mesesVidaUtil,
-                estado, costoInicial, especTecnicas.isEmpty() ? null : especTecnicas, infoGarantia.isEmpty() ? null : infoGarantia);
-
-        if (actualizado) {
-            JOptionPane.showMessageDialog(this, "Equipo ID " + equipoAErEditar.getId() + " actualizado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            if (ventanaPadre != null) {
-                ventanaPadre.actualizarVistaArbol();
-            }
-            dispose();
-        } else {
-            // Este caso es raro si el equipoAErEditar fue encontrado previamente
-            JOptionPane.showMessageDialog(this, "No se pudo actualizar el equipo. Puede que ya no exista.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
+    public void mostrarMensaje(String mensaje, String titulo, int tipo) { JOptionPane.showMessageDialog(this, mensaje, titulo, tipo); }
+    public void cerrarVentana() { this.dispose(); }
+    // ---
 }

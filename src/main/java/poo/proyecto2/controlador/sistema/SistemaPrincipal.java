@@ -494,16 +494,51 @@ public class SistemaPrincipal {
     /**
      * Cancela una orden preventiva.
      */
-    public boolean cancelarOrdenPreventiva(int idOrden, LocalDate fechaCancelacion, String motivo) {
-        OrdenTrabajoPreventiva orden = (OrdenTrabajoPreventiva) buscarOrdenPorId(idOrden);
-        if (orden != null) {
-            orden.cancelar(fechaCancelacion, motivo);
-            return true;
+public boolean cancelarOrdenPreventiva(int idOrden, LocalDate fechaCancelacion, String motivo) {
+    // Buscar la orden en la lista global de órdenes
+    OrdenTrabajo ordenABuscar = null;
+    for (OrdenTrabajo orden : listaOrdenes) {
+        if (orden.getId() == idOrden) {
+            ordenABuscar = orden;
+            break;
         }
+    }
+
+    // Verificar si la orden existe y es del tipo correcto
+    if (ordenABuscar == null) {
+        System.out.println("DEBUG SP: No se encontró la orden con ID " + idOrden + " para cancelar.");
         return false;
     }
 
-    // --- REVISIÓN DE FALLAS (Consultar fallas en órdenes) ---
+    if (!(ordenABuscar instanceof OrdenTrabajoPreventiva)) {
+        System.out.println("DEBUG SP: La orden con ID " + idOrden + " no es de tipo Preventiva.");
+        return false;
+    }
+
+    OrdenTrabajoPreventiva orden = (OrdenTrabajoPreventiva) ordenABuscar;
+
+ 
+    if (orden.getEstado() != OrdenTrabajo.EstadoOrden.PENDIENTE && orden.getEstado() != OrdenTrabajo.EstadoOrden.EN_PROGRESO) {
+        System.out.println("DEBUG SP: La orden con ID " + idOrden + " no está en estado PENDIENTE o EN_PROGRESO. Estado actual: " + orden.getEstado());
+        return false;
+    }
+
+
+    orden.cancelar(fechaCancelacion, motivo); 
+    
+    try {
+        guardar(); // <-- Llama al método guardar del sistema
+        System.out.println("DEBUG SP: Orden preventiva ID " + idOrden + " cancelada y guardada exitosamente.");
+        return true;
+    } catch (IOException e) {
+        System.err.println("ERROR SP: No se pudo guardar la orden preventiva ID " + idOrden + " tras cancelarla. Error: " + e.getMessage());
+        e.printStackTrace();
+
+        return false;
+    }
+    // ---
+}
+
     /**
      * Obtiene todas las fallas reportadas y encontradas en todas las órdenes.
      */
@@ -561,13 +596,22 @@ public class SistemaPrincipal {
      * Registra el inicio de una orden correctiva.
      */
     public boolean iniciarOrdenCorrectiva(int idOrden, LocalDate fechaInicio) {
-        OrdenTrabajoCorrectiva orden = (OrdenTrabajoCorrectiva) buscarOrdenPorId(idOrden);
-        if (orden != null) {
-            orden.iniciar(fechaInicio);
+    OrdenTrabajoCorrectiva orden = (OrdenTrabajoCorrectiva) buscarOrdenPorId(idOrden);
+    if (orden != null && orden.getEstado() == OrdenTrabajo.EstadoOrden.PENDIENTE) { 
+        orden.iniciar(fechaInicio); 
+        try {
+            guardar(); 
+            System.out.println("DEBUG SP: Orden correctiva ID " + idOrden + " iniciada y guardada.");
             return true;
+        } catch (IOException e) {
+            System.err.println("ERROR SP: No se pudo guardar la orden correctiva ID " + idOrden + " tras iniciarla. Error: " + e.getMessage());
+            e.printStackTrace();
+            
+            return false;
         }
-        return false;
     }
+    return false; // No encontrada o estado incorrecto
+}
 
     /**
      * Registra la finalización de una orden correctiva.
@@ -602,6 +646,13 @@ public class SistemaPrincipal {
         return new ArrayList<>(listaOrdenes);
     }
 
+    /**
+    * Obtiene una lista con todos los programas de mantenimiento preventivo registrados en el sistema.
+    * @return Una nueva lista con copias de los programas.
+    */
+    public List<ProgramaMantenimientoPreventivo> obtenerTodosLosProgramas() {
+        return new ArrayList<>(programasMantenimiento.values());
+    }
     /**
      * Obtiene las órdenes de trabajo asociadas a un equipo específico.
      */
@@ -897,27 +948,34 @@ public class SistemaPrincipal {
         return siguienteIdOrden;
     }
 
-    // Método para registrar una nueva orden correctiva y guardarla
-    public void registrarOrdenCorrectiva(OrdenTrabajoCorrectiva orden) {
-        // Añadir la nueva orden a la lista interna
-        listaOrdenes.add(orden);
-        // Actualizar el siguiente ID si es necesario
-        siguienteIdOrden = Math.max(siguienteIdOrden, orden.getId() + 1);
+    /**
+     * Registra una nueva orden de trabajo correctiva y la guarda en el sistema.
+     * @param nuevaOrden La orden a registrar.
+     * @return true si se registró exitosamente, false en caso contrario.
+     */
+    public boolean registrarOrdenCorrectiva(OrdenTrabajoCorrectiva nuevaOrden) {
+        if (nuevaOrden == null) {
+            System.out.println("DEBUG SP: Intento de registrar una orden nula.");
+            return false;
+        }
 
-        // Guardar todos los datos en disco
+        // Añadir la nueva orden a la lista interna
+        listaOrdenes.add(nuevaOrden);
+
         try {
-            guardar(); // <-- Llama al método guardar del sistema
-            System.out.println("DEBUG SP: Orden correctiva ID " + orden.getId() + " registrada y guardada en " + RUTA_ORDENES);
+            // Guardar la lista actualizada de órdenes en el archivo JSON
+            guardar(); // <-- Llama al método general de guardar, que guarda todos los archivos
+            System.out.println("DEBUG SP: Orden correctiva ID " + nuevaOrden.getId() + " registrada y guardada en " + RUTA_ORDENES);
+            return true;
         } catch (IOException e) {
-            System.err.println("ERROR SP: No se pudo guardar la orden correctiva ID " + orden.getId() + ". Error: " + e.getMessage());
+            System.err.println("ERROR SP: No se pudo guardar la orden correctiva ID " + nuevaOrden.getId() + " en " + RUTA_ORDENES + ". Error: " + e.getMessage());
             e.printStackTrace();
-            // Opcional: Revertir la adición a la lista si falla el guardado
-            listaOrdenes.remove(orden);
-            throw new RuntimeException("No se pudo persistir la orden correctiva creada.", e);
+            // Opcional: Revertir el cambio en la lista si falla el guardado
+            listaOrdenes.remove(nuevaOrden);
+            return false;
         }
     }
 
-    
     public boolean finalizarOrdenCorrectiva(int idOrden, LocalDate fechaFin, float horasTrabajo, int costoManoObra, int costoMateriales, String observaciones, List<OrdenTrabajo.FallaEncontrada> nuevasFallas) {
         OrdenTrabajoCorrectiva orden = (OrdenTrabajoCorrectiva) buscarOrdenPorId(idOrden);
         if (orden != null && orden.getEstado() == OrdenTrabajo.EstadoOrden.EN_PROGRESO) {

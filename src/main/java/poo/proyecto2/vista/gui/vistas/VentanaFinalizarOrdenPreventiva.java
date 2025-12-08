@@ -1,9 +1,10 @@
 package poo.proyecto2.vista.gui.vistas;
 
 import poo.proyecto2.modelo.mantenimiento.*;
+import poo.proyecto2.modelo.equipos.FallaEquipo;
 import poo.proyecto2.controlador.sistema.SistemaPrincipal;
 import poo.proyecto2.vista.gui.VentanaMenuPrincipal;
-import poo.proyecto2.modelo.equipos.FallaEquipo;
+import poo.proyecto2.controlador.ControladorFinalizarOrdenPreventiva;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -25,7 +26,7 @@ public class VentanaFinalizarOrdenPreventiva extends JFrame {
     private JLabel lblIdOrden;
     private JTextField txtIdOrden;
     private JButton btnBuscarOrden;
-    private JLabel lblInfoOrden; // Muestra info básica de la orden encontrada
+    private JLabel lblInfoOrden; 
     private JLabel lblFechaFin;
     private JFormattedTextField txtFechaFin;
     private JLabel lblHorasTrabajo;
@@ -43,7 +44,7 @@ public class VentanaFinalizarOrdenPreventiva extends JFrame {
     private JLabel lblFallasTitulo;
     private JScrollPane scrollTablaFallas;
     private JTable tablaFallas;
-    private DefaultTableModel modeloTablaFallas;
+    private DefaultTableModel modeloTablaFallas; 
     private JButton btnAgregarFalla;
     private JButton btnEliminarFalla;
 
@@ -61,12 +62,14 @@ public class VentanaFinalizarOrdenPreventiva extends JFrame {
     // Columnas de la tabla de fallas
     private static final String[] COLUMNAS_FALLAS = {"ID Falla", "Descripción", "Causas", "Acciones"};
 
-    // Variable temporal para la orden actual
-    private OrdenTrabajoPreventiva ordenActual;
+    // Referencia al controlador
+    private ControladorFinalizarOrdenPreventiva controlador;
 
     public VentanaFinalizarOrdenPreventiva(SistemaPrincipal sistema, VentanaMenuPrincipal ventanaPadre) {
         this.sistema = sistema;
         this.ventanaPadre = ventanaPadre;
+        // Crear el controlador pasando el sistema y la vista
+        this.controlador = new ControladorFinalizarOrdenPreventiva(sistema, this);
         inicializarComponentes();
         configurarEventos();
         setTitle("Finalizar Orden de Trabajo Preventiva");
@@ -116,10 +119,10 @@ public class VentanaFinalizarOrdenPreventiva extends JFrame {
 
         gbc.gridx = 1; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.HORIZONTAL;
         txtFechaFin = new JFormattedTextField(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        txtFechaFin.setValue(LocalDate.now()); // Fecha por defecto
-        txtFechaFin.setEnabled(false); // Deshabilitado hasta que se busque una orden
+        txtFechaFin.setValue(LocalDate.now()); 
+        txtFechaFin.setEnabled(false); 
         panelFormulario.add(txtFechaFin, gbc);
-        gbc.gridwidth = 1; // Resetear gridwidth
+        gbc.gridwidth = 1; 
 
         // Fila 2: Horas Trabajo
         gbc.gridx = 0; gbc.gridy = 2;
@@ -128,7 +131,7 @@ public class VentanaFinalizarOrdenPreventiva extends JFrame {
 
         gbc.gridx = 1;
         spnHorasTrabajo = new JSpinner(new SpinnerNumberModel(0.0f, 0.0f, 1000.0f, 0.5f));
-        spnHorasTrabajo.setEnabled(false); // Deshabilitado hasta que se busque una orden
+        spnHorasTrabajo.setEnabled(false); 
         panelFormulario.add(spnHorasTrabajo, gbc);
 
         // Fila 3: Costo Mano de Obra
@@ -138,8 +141,8 @@ public class VentanaFinalizarOrdenPreventiva extends JFrame {
 
         gbc.gridx = 1;
         txtCostoManoObra = new JFormattedTextField(new java.text.DecimalFormat("#,##0.00"));
-        txtCostoManoObra.setValue(0.0); // Valor por defecto
-        txtCostoManoObra.setEnabled(false); // Deshabilitado hasta que se busque una orden
+        txtCostoManoObra.setValue(0.0); 
+        txtCostoManoObra.setEnabled(false); 
         panelFormulario.add(txtCostoManoObra, gbc);
 
         // Fila 4: Costo Materiales
@@ -149,8 +152,8 @@ public class VentanaFinalizarOrdenPreventiva extends JFrame {
 
         gbc.gridx = 1;
         txtCostoMateriales = new JFormattedTextField(new java.text.DecimalFormat("#,##0.00"));
-        txtCostoMateriales.setValue(0.0); // Valor por defecto
-        txtCostoMateriales.setEnabled(false); // Deshabilitado hasta que se busque una orden
+        txtCostoMateriales.setValue(0.0);
+        txtCostoMateriales.setEnabled(false);
         panelFormulario.add(txtCostoMateriales, gbc);
 
         // Fila 5: Observaciones
@@ -160,7 +163,7 @@ public class VentanaFinalizarOrdenPreventiva extends JFrame {
 
         gbc.gridy = 6;
         txtObservaciones = new JTextArea(3, 30);
-        txtObservaciones.setEnabled(false); // Deshabilitado hasta que se busque una orden
+        txtObservaciones.setEnabled(false);
         scrollObservaciones = new JScrollPane(txtObservaciones);
         panelFormulario.add(scrollObservaciones, gbc);
 
@@ -173,116 +176,88 @@ public class VentanaFinalizarOrdenPreventiva extends JFrame {
         modeloTablaFallas = new DefaultTableModel(COLUMNAS_FALLAS, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // No se edita directamente la tabla
+                return false; 
             }
         };
+
+       
         tablaFallas = new JTable(modeloTablaFallas);
+        
+        tablaFallas.setPreferredScrollableViewportSize(new Dimension(600, tablaFallas.getRowHeight() * 4));
+        
+        tablaFallas.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
         scrollTablaFallas = new JScrollPane(tablaFallas);
+        
+        scrollTablaFallas.setMinimumSize(new Dimension(600, 150)); 
+
         panelFallas.add(scrollTablaFallas, BorderLayout.CENTER);
 
         JPanel panelBotonesFallas = new JPanel(new FlowLayout());
         btnAgregarFalla = new JButton("Agregar Falla");
         btnEliminarFalla = new JButton("Eliminar Falla");
-        btnAgregarFalla.setEnabled(false); // Deshabilitado hasta que se busque una orden
-        btnEliminarFalla.setEnabled(false); // Deshabilitado hasta que se busque una orden
+        btnAgregarFalla.setEnabled(false); 
+        btnEliminarFalla.setEnabled(false); 
         panelBotonesFallas.add(btnAgregarFalla);
         panelBotonesFallas.add(btnEliminarFalla);
         panelFallas.add(panelBotonesFallas, BorderLayout.SOUTH);
 
         // Agregar panel de fallas al sur del formulario
         gbc.gridx = 0; gbc.gridy = 7; gbc.gridwidth = 4; gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 0.5; 
         panelFormulario.add(panelFallas, gbc);
+        gbc.weighty = 0.0;
 
         // --- Panel Inferior: Botones ---
         JPanel panelBotones = new JPanel(new FlowLayout());
         btnFinalizar = new JButton("Finalizar Orden");
         btnCancelar = new JButton("Cancelar");
-        btnFinalizar.setEnabled(false); // Deshabilitado hasta que se busque una orden
+        btnFinalizar.setEnabled(false);
         panelBotones.add(btnFinalizar);
         panelBotones.add(btnCancelar);
         add(panelBotones, BorderLayout.SOUTH);
     }
 
     private void configurarEventos() {
-        btnBuscarOrden.addActionListener(e -> {
-            String idStr = txtIdOrden.getText().trim();
-            if (!idStr.isEmpty()) {
-                try {
-                    int id = Integer.parseInt(idStr);
-                    OrdenTrabajo orden = sistema.buscarOrdenPorId(id);
-                    if (orden != null) {
-                        if (orden instanceof OrdenTrabajoPreventiva) {
-                            OrdenTrabajoPreventiva ordenPrev = (OrdenTrabajoPreventiva) orden;
-                            if (ordenPrev.getEstado() == OrdenTrabajo.EstadoOrden.PENDIENTE || ordenPrev.getEstado() == OrdenTrabajo.EstadoOrden.EN_PROGRESO) {
-                                lblInfoOrden.setText(" (Orden ID: " + orden.getId() + " - Estado: " + orden.getEstado() + " - Equipo ID: " + orden.getIdEquipo() + ")");
-                                // Guardar referencia temporal
-                                ordenActual = ordenPrev;
-                                // Limpiar tabla de fallas y cargar las existentes (si las hay)
-                                modeloTablaFallas.setRowCount(0); // Limpiar tabla
-                                for (OrdenTrabajo.FallaEncontrada falla : ordenPrev.getFallasEncontradas()) {
-                                    Object[] fila = {falla.getIdFalla(), falla.getDescripcionFalla(), falla.getCausas(), falla.getAccionesTomadas()};
-                                    modeloTablaFallas.addRow(fila);
-                                }
-                                // Habilitar campos de finalización
-                                txtFechaFin.setEnabled(true);
-                                spnHorasTrabajo.setEnabled(true);
-                                txtCostoManoObra.setEnabled(true);
-                                txtCostoMateriales.setEnabled(true);
-                                txtObservaciones.setEnabled(true);
-                                btnAgregarFalla.setEnabled(true);
-                                btnEliminarFalla.setEnabled(true);
-                                btnFinalizar.setEnabled(true);
-                            } else {
-                                JOptionPane.showMessageDialog(this, "La orden ID " + id + " no está en estado PENDIENTE o EN_PROGRESO. No se puede finalizar.", "Error", JOptionPane.ERROR_MESSAGE);
-                                lblInfoOrden.setText(" (Orden no válida para finalizar)");
-                                limpiarCamposDespuesDeBuscar();
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(this, "El ID " + id + " pertenece a una orden de tipo incorrecto (no Preventiva).", "Error", JOptionPane.ERROR_MESSAGE);
-                            lblInfoOrden.setText(" (Orden no es Preventiva)");
-                            limpiarCamposDespuesDeBuscar();
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(this, "No se encontró una orden con ID: " + id, "Error", JOptionPane.ERROR_MESSAGE);
-                        lblInfoOrden.setText(" (Orden no encontrada)");
-                        limpiarCamposDespuesDeBuscar();
-                    }
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Por favor, ingrese un ID de orden válido.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, ingrese un ID de orden.", "Error", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
-        btnAgregarFalla.addActionListener(e -> abrirVentanaAgregarFalla());
-
-        btnEliminarFalla.addActionListener(e -> {
-            int filaSeleccionada = tablaFallas.getSelectedRow();
-            if (filaSeleccionada >= 0) {
-                modeloTablaFallas.removeRow(filaSeleccionada);
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, seleccione una falla de la lista para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
-        btnFinalizar.addActionListener(e -> finalizarOrden());
-
-        btnCancelar.addActionListener(e -> dispose()); // Cierra la ventana
+        btnBuscarOrden.addActionListener(e -> controlador.buscarOrden());
+        btnAgregarFalla.addActionListener(e -> controlador.agregarFalla());
+        btnEliminarFalla.addActionListener(e -> controlador.eliminarFalla());
+        btnFinalizar.addActionListener(e -> controlador.finalizarOrden());
+        btnCancelar.addActionListener(e -> controlador.cancelar());
     }
 
-    private void limpiarCamposDespuesDeBuscar() {
-        // Limpiar campos de finalización si no se encontró una orden válida
+    // --- Métodos para que el controlador interactúe con la vista ---
+    public JTextField getTxtIdOrden() { return txtIdOrden; }
+    public JFormattedTextField getTxtFechaFin() { return txtFechaFin; }
+    public JSpinner getSpnHorasTrabajo() { return spnHorasTrabajo; }
+    public JFormattedTextField getTxtCostoManoObra() { return txtCostoManoObra; }
+    public JFormattedTextField getTxtCostoMateriales() { return txtCostoMateriales; }
+    public JTextArea getTxtObservaciones() { return txtObservaciones; }
+
+    public void mostrarInfoOrden(String texto) { lblInfoOrden.setText(texto); }
+    public void mostrarMensaje(String mensaje, String titulo, int tipo) { JOptionPane.showMessageDialog(this, mensaje, titulo, tipo); }
+
+    public DefaultTableModel getModeloTablaFallas() { return modeloTablaFallas; }
+    public void limpiarTablaFallas() { modeloTablaFallas.setRowCount(0); }
+
+    public void habilitarCamposFinalizar(boolean habilitar) {
+        txtFechaFin.setEnabled(habilitar);
+        spnHorasTrabajo.setEnabled(habilitar);
+        txtCostoManoObra.setEnabled(habilitar);
+        txtCostoMateriales.setEnabled(habilitar);
+        txtObservaciones.setEnabled(habilitar);
+        btnAgregarFalla.setEnabled(habilitar);
+        btnEliminarFalla.setEnabled(habilitar);
+        btnFinalizar.setEnabled(habilitar);
+    }
+
+    public void limpiarCamposDespuesDeBuscar() {
         txtFechaFin.setValue(LocalDate.now());
         spnHorasTrabajo.setValue(0.0f);
         txtCostoManoObra.setValue(0.0);
         txtCostoMateriales.setValue(0.0);
         txtObservaciones.setText("");
-
-        // Limpiar tabla de fallas
-        modeloTablaFallas.setRowCount(0);
-
-        // Deshabilitar campos
+        modeloTablaFallas.setRowCount(0); 
         txtFechaFin.setEnabled(false);
         spnHorasTrabajo.setEnabled(false);
         txtCostoManoObra.setEnabled(false);
@@ -291,17 +266,12 @@ public class VentanaFinalizarOrdenPreventiva extends JFrame {
         btnAgregarFalla.setEnabled(false);
         btnEliminarFalla.setEnabled(false);
         btnFinalizar.setEnabled(false);
-
-        // Limpiar referencia temporal
-        ordenActual = null;
     }
 
-    private void abrirVentanaAgregarFalla() {
-        if (ordenActual == null) {
-            JOptionPane.showMessageDialog(this, "Por favor, busque una orden primero.", "Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+    public void cerrarVentana() { this.dispose(); }
 
+    // --- Métodos específicos para la gestión de fallas ---
+    public void abrirVentanaAgregarFalla() {
         if (ventanaAgregarFalla != null && ventanaAgregarFalla.isVisible()) {
             ventanaAgregarFalla.toFront();
             return;
@@ -369,59 +339,12 @@ public class VentanaFinalizarOrdenPreventiva extends JFrame {
         ventanaAgregarFalla.setVisible(true);
     }
 
-    private void finalizarOrden() {
-        if (ordenActual == null) {
-            JOptionPane.showMessageDialog(this, "No hay una orden seleccionada para finalizar.", "Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Validar campos requeridos
-        if (txtFechaFin.getText().trim().isEmpty() ||
-            spnHorasTrabajo.getValue().equals(0.0f) ||
-            txtCostoManoObra.getText().trim().isEmpty() ||
-            txtCostoMateriales.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos obligatorios (marcados con *).", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        LocalDate fechaFin;
-        try {
-            fechaFin = LocalDate.parse(txtFechaFin.getText().trim());
-        } catch (java.time.format.DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese una fecha de finalización válida en formato AAAA-MM-DD.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        float horas = ((Number) spnHorasTrabajo.getValue()).floatValue();
-        int costoMO = ((Number) txtCostoManoObra.getValue()).intValue();
-        int costoMat = ((Number) txtCostoMateriales.getValue()).intValue();
-        String observaciones = txtObservaciones.getText().trim();
-
-        // --- PROCESAR LAS FALLAS DE LA TABLA ---
-        // Recorrer la tabla de fallas y crear una nueva lista de fallas encontradas
-        List<OrdenTrabajo.FallaEncontrada> nuevasFallas = new ArrayList<>();
-        for (int i = 0; i < modeloTablaFallas.getRowCount(); i++) {
-            int idFalla = (Integer) modeloTablaFallas.getValueAt(i, 0);
-            String descripcionFalla = (String) modeloTablaFallas.getValueAt(i, 1);
-            String causas = (String) modeloTablaFallas.getValueAt(i, 2);
-            String acciones = (String) modeloTablaFallas.getValueAt(i, 3);
-            nuevasFallas.add(new OrdenTrabajo.FallaEncontrada(idFalla, descripcionFalla, causas, acciones));
-        }
-        // --- FIN PROCESAR FALLAS ---
-
-        // Llamar al sistema para finalizar la orden con las nuevas fallas
-        boolean finalizada = sistema.finalizarOrdenPreventiva(ordenActual.getId(), fechaFin, horas, costoMO, costoMat, observaciones, nuevasFallas);
-
-        if (finalizada) {
-            JOptionPane.showMessageDialog(this, "Orden ID " + ordenActual.getId() + " finalizada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            // Limpiar formulario y deshabilitar campos
-            limpiarCamposDespuesDeBuscar();
-            // Actualizar el árbol en la ventana principal si es necesario
-            if (ventanaPadre != null) {
-                // ventanaPadre.actualizarVistaArbol(); // Llama al método de actualización si existe
-            }
+    public void eliminarFallaSeleccionadaDeTabla() {
+        int filaSeleccionada = tablaFallas.getSelectedRow();
+        if (filaSeleccionada >= 0) {
+            modeloTablaFallas.removeRow(filaSeleccionada);
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudo finalizar la orden. Puede que ya esté completada o cancelada, o hubo un error al guardar.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione una falla de la lista para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
     }
 }

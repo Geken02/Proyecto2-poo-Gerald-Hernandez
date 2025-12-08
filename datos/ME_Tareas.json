@@ -26,5 +26,9 @@
   {
     "id": 7,
     "descripcion": "Ajuste de cables de polea"
+  },
+  {
+    "id": 8,
+    "descripcion": "Pulido de tuberias"
   }
 ]

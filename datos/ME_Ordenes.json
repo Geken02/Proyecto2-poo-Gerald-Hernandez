@@ -151,10 +151,119 @@
     "idEquipo": 21,
     "fechaOrden": "2025-12-05",
     "fechaEjecucion": "2026-02-04",
+    "fechaInicioReal": "2025-12-07",
     "horasTrabajo": 0.0,
     "costoManoObra": 0,
     "costoMateriales": 0,
-    "estado": "PENDIENTE",
+    "estado": "EN_PROGRESO",
+    "fallasReportadas": [],
+    "fallasEncontradas": []
+  },
+  {
+    "tipo": "preventiva",
+    "idFase": 0,
+    "tareas": [
+      {
+        "id": 8,
+        "descripcion": "Pulido de tuberias"
+      },
+      {
+        "id": 5,
+        "descripcion": "Revisión y limpieza de filtros"
+      },
+      {
+        "id": 1,
+        "descripcion": "Limpieza general del equipo"
+      }
+    ],
+    "id": 205,
+    "idEquipo": 24,
+    "fechaOrden": "2025-12-07",
+    "fechaEjecucion": "2026-02-09",
+    "fechaInicioReal": "2025-12-07",
+    "fechaFinReal": "2025-12-07",
+    "horasTrabajo": 2.5,
+    "costoManoObra": 12,
+    "costoMateriales": 10,
+    "observacionesEjecucion": "",
+    "estado": "COMPLETADA",
+    "fallasReportadas": [],
+    "fallasEncontradas": [
+      {
+        "idFalla": 4,
+        "descripcionFalla": "Fallo en el sistema de refrigeración",
+        "causas": "Desgaste del sistema",
+        "accionesTomadas": "Cambio de las partes"
+      }
+    ]
+  },
+  {
+    "tipo": "preventiva",
+    "idFase": 1,
+    "tareas": [
+      {
+        "id": 8,
+        "descripcion": "Pulido de tuberias"
+      },
+      {
+        "id": 4,
+        "descripcion": "Calibración de sensores"
+      },
+      {
+        "id": 1,
+        "descripcion": "Limpieza general del equipo"
+      }
+    ],
+    "id": 206,
+    "idEquipo": 24,
+    "fechaOrden": "2025-12-07",
+    "fechaEjecucion": "2025-12-23",
+    "fechaInicioReal": "2025-12-07",
+    "horasTrabajo": 0.0,
+    "costoManoObra": 0,
+    "costoMateriales": 0,
+    "estado": "CANCELADA",
+    "fechaCancelacion": "2025-12-07",
+    "motivoCancelacion": "Mantenimiento no requerido",
+    "fallasReportadas": [],
+    "fallasEncontradas": []
+  },
+  {
+    "tipo": "correctiva",
+    "id": 207,
+    "idEquipo": 24,
+    "fechaOrden": "2025-12-07",
+    "fechaEjecucion": "2025-12-08",
+    "observaciones": "Equipo en mal estado",
+    "fechaInicioReal": "2025-12-07",
+    "fechaFinReal": "2025-12-07",
+    "horasTrabajo": 2.0,
+    "costoManoObra": 12,
+    "costoMateriales": 10,
+    "observacionesEjecucion": "Falta de mantenimiento",
+    "estado": "COMPLETADA",
+    "fallasReportadas": [],
+    "fallasEncontradas": [
+      {
+        "idFalla": 6,
+        "descripcionFalla": "Fallo en la fuente de poder",
+        "causas": "Falta de mantenimiento a esta",
+        "accionesTomadas": "Cambio de la fuente de poder"
+      }
+    ]
+  },
+  {
+    "tipo": "correctiva",
+    "id": 208,
+    "idEquipo": 24,
+    "fechaOrden": "2025-12-07",
+    "fechaEjecucion": "2025-12-08",
+    "observaciones": "Equipo eficiente",
+    "fechaInicioReal": "2025-12-07",
+    "horasTrabajo": 0.0,
+    "costoManoObra": 0,
+    "costoMateriales": 0,
+    "estado": "EN_PROGRESO",
     "fallasReportadas": [],
     "fallasEncontradas": []
   }

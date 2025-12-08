@@ -1,8 +1,10 @@
 package poo.proyecto2.vista.gui.vistas;
 
 import poo.proyecto2.modelo.equipos.FallaEquipo;
+import poo.proyecto2.modelo.mantenimiento.OrdenTrabajo;
 import poo.proyecto2.controlador.sistema.SistemaPrincipal;
-import poo.proyecto2.vista.gui.VentanaMenuPrincipal;
+import poo.proyecto2.vista.gui.VentanaMenuPrincipal; 
+import poo.proyecto2.controlador.ControladorAdministrarFallas;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -14,7 +16,7 @@ import java.util.List;
 public class VentanaAdministrarFallas extends JFrame {
 
     private SistemaPrincipal sistema;
-    private VentanaMenuPrincipal ventanaPadre; // Opcional
+    private VentanaMenuPrincipal ventanaPadre;
 
     // Componentes de la interfaz
     private JLabel lblTitulo;
@@ -29,9 +31,15 @@ public class VentanaAdministrarFallas extends JFrame {
     // Columnas de la tabla
     private static final String[] COLUMNAS = {"ID", "Descripción"};
 
+    // Referencia al controlador
+    private ControladorAdministrarFallas controlador;
+
     public VentanaAdministrarFallas(SistemaPrincipal sistema, VentanaMenuPrincipal ventanaPadre) {
         this.sistema = sistema;
         this.ventanaPadre = ventanaPadre;
+        // Crear el controlador pasando el modelo y la vista
+        this.controlador = new ControladorAdministrarFallas(sistema, this);
+
         inicializarComponentes();
         configurarEventos();
         setTitle("Administrar Fallas Maestras");
@@ -39,7 +47,8 @@ public class VentanaAdministrarFallas extends JFrame {
         setResizable(true);
         setSize(700, 500);
         setLocationRelativeTo(ventanaPadre);
-        actualizarTabla(); // Carga inicial de fallas
+        // Llamar al controlador para cargar los datos iniciales
+        controlador.cargarFallasIniciales();
     }
 
     private void inicializarComponentes() {
@@ -77,56 +86,14 @@ public class VentanaAdministrarFallas extends JFrame {
     }
 
     private void configurarEventos() {
-        btnAgregar.addActionListener(e -> {
-            String descripcion = JOptionPane.showInputDialog(this, "Ingrese la descripción de la nueva falla:");
-            if (descripcion != null && !descripcion.trim().isEmpty()) {
-                sistema.crearFallaMaestra(descripcion.trim());
-                JOptionPane.showMessageDialog(this, "Falla agregada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                actualizarTabla(); // Refresca la vista
-            }
-        });
-
-        btnEliminar.addActionListener(e -> {
-            int filaSeleccionada = tablaFallas.getSelectedRow();
-            if (filaSeleccionada >= 0) {
-                int idFalla = (int) modeloTabla.getValueAt(filaSeleccionada, 0); // Obtener ID de la columna 0
-                int respuesta = JOptionPane.showConfirmDialog(
-                        this,
-                        "¿Está seguro de que desea eliminar la falla con ID " + idFalla + "?\nEsta acción no se puede deshacer.",
-                        "Confirmar Eliminación",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE
-                );
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    // TODO: Implementar en SistemaPrincipal un método para eliminar fallas maestras
-                    // y verificar que no estén asociadas a órdenes de trabajo antes de eliminarlas.
-                    // Por ahora, simulamos que no se puede eliminar si está en uso.
-                    // Buscar si alguna orden de trabajo contiene esta falla
-                    boolean enUso = sistema.obtenerTodasLasOrdenes().stream()
-                            .anyMatch(orden -> orden.getFallasEncontradas().stream()
-                                    .anyMatch(falla -> falla.getIdFalla() == idFalla));
-
-                    if (enUso) {
-                        JOptionPane.showMessageDialog(this, "No se puede eliminar la falla con ID " + idFalla + ". Está asociada a una o más órdenes de trabajo.", "Error", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        // Si no está en uso, intentamos eliminarla (esto requiere un método en SistemaPrincipal)
-                        // Por ejemplo: boolean eliminada = sistema.eliminarFallaMaestra(idFalla);
-                        // if(eliminada) { ... }
-                        // Para esta demo, asumiremos que el sistema no tiene un método de eliminación directa
-                        // o que la eliminación está prohibida para mantener integridad.
-                        JOptionPane.showMessageDialog(this, "La eliminación de fallas maestras no está permitida para mantener la integridad de los datos históricos (órdenes de trabajo).", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                        // Si decides implementar eliminación, aquí iría la llamada al sistema y luego actualizarTabla()
-                    }
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, seleccione una falla de la lista para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
+        // --- Eventos de Botones ---
+        btnAgregar.addActionListener(e -> controlador.agregarFalla()); // <-- Llama al controlador
+        btnEliminar.addActionListener(e -> controlador.eliminarFalla()); // <-- Llama al controlador
         btnCerrar.addActionListener(e -> dispose()); // Cierra la ventana
     }
 
-    private void actualizarTabla() {
+    // --- Métodos para que el controlador interactúe con la vista ---
+    public void actualizarTabla() {
         modeloTabla.setRowCount(0); // Limpia la tabla
         List<FallaEquipo> fallas = sistema.obtenerTodasLasFallasMaestras();
         for (FallaEquipo falla : fallas) {
@@ -134,4 +101,9 @@ public class VentanaAdministrarFallas extends JFrame {
             modeloTabla.addRow(fila);
         }
     }
+
+    // Métodos para que el controlador acceda a componentes específicos
+    public JTable getTablaFallas() { return tablaFallas; }
+    public DefaultTableModel getModeloTabla() { return modeloTabla; }
+    // ---
 }

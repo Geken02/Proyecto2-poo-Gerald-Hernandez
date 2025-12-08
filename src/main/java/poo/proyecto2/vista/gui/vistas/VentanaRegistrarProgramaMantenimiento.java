@@ -3,7 +3,8 @@ package poo.proyecto2.vista.gui.vistas;
 import poo.proyecto2.modelo.equipos.NodoEquipo;
 import poo.proyecto2.modelo.mantenimiento.*;
 import poo.proyecto2.controlador.sistema.SistemaPrincipal;
-import poo.proyecto2.vista.gui.VentanaMenuPrincipal; // Ventana padre
+import poo.proyecto2.vista.gui.VentanaMenuPrincipal;
+import poo.proyecto2.controlador.ControladorRegistrarProgramaMantenimiento;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -16,14 +17,14 @@ import java.util.List;
 public class VentanaRegistrarProgramaMantenimiento extends JFrame {
 
     private SistemaPrincipal sistema;
-    private VentanaMenuPrincipal ventanaPadre; // Referencia a la ventana principal
+    private VentanaMenuPrincipal ventanaPadre; 
 
     // Componentes
     private JLabel lblTitulo;
     private JLabel lblIdEquipo;
     private JTextField txtIdEquipo;
     private JButton btnBuscarEquipo;
-    private JLabel lblNombreEquipo; // Para mostrar el nombre del equipo encontrado
+    private JLabel lblNombreEquipo; 
     private JLabel lblFasesTitulo;
     private JScrollPane scrollTablaFases;
     private JTable tablaFases;
@@ -56,10 +57,16 @@ public class VentanaRegistrarProgramaMantenimiento extends JFrame {
     // Lista temporal para almacenar las fases que se van a guardar
     private List<FaseMantenimiento> fasesTemporales;
 
+    // Referencia al controlador
+    private ControladorRegistrarProgramaMantenimiento controlador;
+
     public VentanaRegistrarProgramaMantenimiento(SistemaPrincipal sistema, VentanaMenuPrincipal ventanaPadre) {
         this.sistema = sistema;
         this.ventanaPadre = ventanaPadre;
         this.fasesTemporales = new ArrayList<>(); // Inicializar lista temporal
+        // Crear el controlador pasando el sistema y la vista
+        this.controlador = new ControladorRegistrarProgramaMantenimiento(sistema, this);
+
         inicializarComponentes();
         configurarEventos();
         setTitle("Registrar Nuevo Programa de Mantenimiento");
@@ -77,7 +84,7 @@ public class VentanaRegistrarProgramaMantenimiento extends JFrame {
         lblIdEquipo = new JLabel("ID del Equipo:");
         txtIdEquipo = new JTextField(10);
         btnBuscarEquipo = new JButton("Buscar");
-        lblNombreEquipo = new JLabel(" (Equipo no encontrado)"); // Inicialmente vacío
+        lblNombreEquipo = new JLabel(" (Equipo no encontrado)"); 
         lblNombreEquipo.setFont(lblNombreEquipo.getFont().deriveFont(Font.ITALIC));
 
         panelBusqueda.add(lblIdEquipo);
@@ -94,7 +101,7 @@ public class VentanaRegistrarProgramaMantenimiento extends JFrame {
         modeloTablaFases = new DefaultTableModel(COLUMNAS_FASES, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // No se edita directamente la tabla
+                return false;
             }
         };
         tablaFases = new JTable(modeloTablaFases);
@@ -121,105 +128,42 @@ public class VentanaRegistrarProgramaMantenimiento extends JFrame {
     }
 
     private void configurarEventos() {
-        btnBuscarEquipo.addActionListener(e -> {
-            String idStr = txtIdEquipo.getText().trim();
-            if (!idStr.isEmpty()) {
-                try {
-                    int id = Integer.parseInt(idStr);
-                    NodoEquipo equipo = sistema.buscarEquipoPorId(id);
-                    if (equipo != null) {
-                        lblNombreEquipo.setText(" (" + equipo.getDescripcion() + ")"); // Mostrar nombre del equipo
-                    } else {
-                        lblNombreEquipo.setText(" (Equipo no encontrado)");
-                        JOptionPane.showMessageDialog(this, "No se encontró un equipo con ID: " + id, "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Por favor, ingrese un ID de equipo válido.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, ingrese un ID de equipo.", "Error", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
-        btnAgregarFase.addActionListener(e -> {
-            String idEquipoStr = txtIdEquipo.getText().trim();
-            if (idEquipoStr.isEmpty()) {
-                 JOptionPane.showMessageDialog(this, "Por favor, busque y seleccione un equipo primero.", "Error", JOptionPane.ERROR_MESSAGE);
-                 return;
-            }
-            try {
-                int idEquipo = Integer.parseInt(idEquipoStr);
-                NodoEquipo equipo = sistema.buscarEquipoPorId(idEquipo);
-                if (equipo == null) {
-                    JOptionPane.showMessageDialog(this, "El equipo seleccionado ya no es válido. Por favor, búsquelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                abrirVentanaAgregarFase(); // Llama al método que crea el JDialog
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "ID de equipo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        btnGuardarPrograma.addActionListener(e -> {
-            String idEquipoStr = txtIdEquipo.getText().trim();
-            if (idEquipoStr.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, busque y seleccione un equipo primero.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            try {
-                int idEquipo = Integer.parseInt(idEquipoStr);
-                NodoEquipo equipo = sistema.buscarEquipoPorId(idEquipo);
-                if (equipo == null) {
-                    JOptionPane.showMessageDialog(this, "El equipo seleccionado ya no es válido. Por favor, búsquelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                if (fasesTemporales.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "El programa debe tener al menos una fase.", "Error", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                // Crear el programa y asociarlo al equipo
-                ProgramaMantenimientoPreventivo nuevoPrograma = new ProgramaMantenimientoPreventivo(idEquipo); // Asegúrate que el constructor reciba el idEquipo
-                for (FaseMantenimiento fase : fasesTemporales) {
-                    nuevoPrograma.agregarFase(fase);
-                }
-
-                // *** LLAMAR AL SISTEMA PARA GUARDARLO ***
-                boolean guardado = sistema.guardarPrograma(nuevoPrograma);
-                if (guardado) {
-                    JOptionPane.showMessageDialog(this, "Programa de mantenimiento guardado exitosamente para el equipo ID: " + idEquipo + ".", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                    // Opcional: Limpiar la lista temporal y la tabla después de guardar
-                    fasesTemporales.clear();
-                    modeloTablaFases.setRowCount(0);
-                    lblNombreEquipo.setText(" (Equipo no encontrado)"); // Resetear nombre
-                    txtIdEquipo.setText(""); // Resetear ID
-                } else {
-                    JOptionPane.showMessageDialog(this, "No se pudo guardar el programa en el sistema.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "ID de equipo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        btnCancelar.addActionListener(e -> dispose()); // Cierra la ventana
+        // --- Eventos de Botones ---
+        btnBuscarEquipo.addActionListener(e -> controlador.buscarEquipo());
+        btnAgregarFase.addActionListener(e -> controlador.agregarFase());
+        btnGuardarPrograma.addActionListener(e -> controlador.guardarPrograma());
+        btnCancelar.addActionListener(e -> controlador.cancelar()); 
     }
 
-    private void abrirVentanaAgregarFase() {
+    // --- Métodos para que el controlador acceda y manipule la vista ---
+    public JTextField getTxtIdEquipo() { return txtIdEquipo; }
+    public void mostrarNombreEquipo(String nombre) { lblNombreEquipo.setText(" (" + nombre + ")"); }
+    public void resetearNombreEquipo() { lblNombreEquipo.setText(" (Equipo no encontrado)"); }
+    public void limpiarCampoIdEquipo() { txtIdEquipo.setText(""); }
+    public void mostrarMensaje(String mensaje, String titulo, int tipo) { JOptionPane.showMessageDialog(this, mensaje, titulo, tipo); }
+    public List<FaseMantenimiento> getFasesTemporales() { return new ArrayList<>(fasesTemporales); } // Devolver copia
+    public void limpiarFormulario() {
+        txtIdEquipo.setText("");
+        resetearNombreEquipo();
+        modeloTablaFases.setRowCount(0);
+        fasesTemporales.clear();
+    }
+    public void cerrarVentana() { this.dispose(); }
+
+    // --- Método para abrir la ventana de agregar/editar fase ---
+    public void abrirVentanaAgregarFase() {
         if (ventanaFase != null && ventanaFase.isVisible()) {
-            // Si la ventana ya está abierta, la traemos al frente
             ventanaFase.toFront();
             return;
         }
 
-        // --- CREAR EL JDIALOG ---
-        ventanaFase = new JDialog(this, "Agregar/Editar Fase", true); // 'true' para modalidad.
+        ventanaFase = new JDialog(this, "Agregar/Editar Fase", true);
         ventanaFase.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         ventanaFase.setLayout(new BorderLayout());
 
         // --- Panel Central: Formulario y Tareas ---
         JSplitPane splitFase = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitFase.setResizeWeight(0.5); // División 50-50
+        splitFase.setResizeWeight(0.5);
 
         // --- Panel Izquierdo: Formulario de Fase ---
         JPanel panelForm = new JPanel(new GridBagLayout());
@@ -271,11 +215,10 @@ public class VentanaRegistrarProgramaMantenimiento extends JFrame {
         spnHorasFase = new JSpinner(new SpinnerNumberModel(1.0f, 0.1f, 1000.0f, 0.5f));
         panelForm.add(spnHorasFase, gbc);
 
-        // --- Panel Derecho: Selección de Tareas (CORREGIDO) ---
+        // --- Panel Derecho: Selección de Tareas ---
         JPanel panelTareas = new JPanel(new BorderLayout());
         panelTareas.setBorder(BorderFactory.createTitledBorder("Tareas de la Fase"));
 
-        // Inicializar modelos y listas de tareas
         modeloTareasDisp = new DefaultListModel<>();
         List<TareaMantenimiento> todasLasTareas = sistema.obtenerTodasLasTareasMaestras();
         System.out.println("DEBUG VFase: Número de tareas obtenidas desde sistema: " + todasLasTareas.size()); // DEBUG
@@ -290,38 +233,31 @@ public class VentanaRegistrarProgramaMantenimiento extends JFrame {
         listaTareasSeleccionadas = new JList<>(modeloTareasSel);
         JScrollPane scrollSel = new JScrollPane(listaTareasSeleccionadas);
 
-        // Botones para mover tareas
         btnAgregarTarea = new JButton(">>");
         btnQuitarTarea = new JButton("<<");
         JPanel panelBotonesTareas = new JPanel(new GridLayout(2, 1));
         panelBotonesTareas.add(btnAgregarTarea);
         panelBotonesTareas.add(btnQuitarTarea);
 
-        // Layout CORRECTO para alinear botones entre listas usando GridBagLayout
         JPanel panelListasConBotones = new JPanel(new GridBagLayout());
         GridBagConstraints gbcTareas = new GridBagConstraints();
         gbcTareas.insets = new Insets(5, 5, 5, 5);
 
-        // Etiquetas para las listas
-        gbcTareas.gridx = 0; gbcTareas.gridy = 0; gbcTareas.gridwidth = 1; gbcTareas.anchor = GridBagConstraints.WEST;
+        gbcTareas.gridx = 0; gbcTareas.gridy = 0; gbcTareas.anchor = GridBagConstraints.WEST;
         panelListasConBotones.add(new JLabel("Disponibles:"), gbcTareas);
-        gbcTareas.gridx = 2; gbcTareas.gridy = 0; gbcTareas.gridwidth = 1; gbcTareas.anchor = GridBagConstraints.WEST;
-        panelListasConBotones.add(new JLabel("Seleccionadas:"), gbcTareas);
-
-        // Listas y botones
-        gbcTareas.gridx = 0; gbcTareas.gridy = 1; gbcTareas.fill = GridBagConstraints.BOTH; gbcTareas.weightx = 1.0; gbcTareas.weighty = 1.0;
-        panelListasConBotones.add(scrollDisp, gbcTareas); // Lista disponibles
+        gbcTareas.gridy = 1; gbcTareas.fill = GridBagConstraints.BOTH; gbcTareas.weightx = 1.0; gbcTareas.weighty = 1.0;
+        panelListasConBotones.add(scrollDisp, gbcTareas);
 
         gbcTareas.gridx = 1; gbcTareas.gridy = 1; gbcTareas.fill = GridBagConstraints.NONE; gbcTareas.weightx = 0.0; gbcTareas.weighty = 0.0;
-        panelListasConBotones.add(panelBotonesTareas, gbcTareas); // Panel con botones en el centro
+        panelListasConBotones.add(panelBotonesTareas, gbcTareas);
 
-        gbcTareas.gridx = 2; gbcTareas.gridy = 1; gbcTareas.fill = GridBagConstraints.BOTH; gbcTareas.weightx = 1.0; gbcTareas.weighty = 1.0;
-        panelListasConBotones.add(scrollSel, gbcTareas); // Lista seleccionadas
+        gbcTareas.gridx = 2; gbcTareas.gridy = 0; gbcTareas.anchor = GridBagConstraints.WEST;
+        panelListasConBotones.add(new JLabel("Seleccionadas:"), gbcTareas);
+        gbcTareas.gridy = 1; gbcTareas.fill = GridBagConstraints.BOTH; gbcTareas.weightx = 1.0; gbcTareas.weighty = 1.0;
+        panelListasConBotones.add(scrollSel, gbcTareas);
 
-        // Agregar el panel combinado al panel principal de tareas
         panelTareas.add(panelListasConBotones, BorderLayout.CENTER);
 
-        // Añadir form y tareas al split
         splitFase.setLeftComponent(panelForm);
         splitFase.setRightComponent(panelTareas);
 
@@ -338,9 +274,9 @@ public class VentanaRegistrarProgramaMantenimiento extends JFrame {
         // --- Eventos Ventana Fase ---
         btnAgregarTarea.addActionListener(e -> {
             int[] indices = listaTareasDisponibles.getSelectedIndices();
-            for (int i = indices.length - 1; i >= 0; i--) { // Iterar backwards para no alterar índices al remover
+            for (int i = indices.length - 1; i >= 0; i--) {
                 TareaMantenimiento tarea = modeloTareasDisp.getElementAt(indices[i]);
-                if (!modeloTareasSel.contains(tarea)) { // Prevenir duplicados
+                if (!modeloTareasSel.contains(tarea)) {
                     modeloTareasSel.addElement(tarea);
                 }
             }
@@ -369,24 +305,17 @@ public class VentanaRegistrarProgramaMantenimiento extends JFrame {
                 String partes = txtPartesFase.getText().trim();
                 String herramientas = txtHerramientasFase.getText().trim();
                 String personal = txtPersonalFase.getText().trim();
-                float horas = ((Number) spnHorasFase.getValue()).floatValue(); // CORREGIDO: Casting seguro
+                float horas = ((Number) spnHorasFase.getValue()).floatValue();
 
-                // Crear la nueva fase
                 FaseMantenimiento nuevaFase = new FaseMantenimiento(tipoFreq, frecuencia, ciclos, partes, herramientas, personal, horas);
 
-                // --- AÑADIR LAS TAREAS SELECCIONADAS A LA FASE (con depuración) ---
-                System.out.println("DEBUG VFase: Iniciando proceso de añadir tareas a la fase. Tareas seleccionadas en modelo: " + modeloTareasSel.getSize()); // DEBUG
+                // --- AÑADIR LAS TAREAS SELECCIONADAS A LA FASE ---
                 for (int i = 0; i < modeloTareasSel.getSize(); i++) {
                     TareaMantenimiento tarea = modeloTareasSel.getElementAt(i);
-                    System.out.println("DEBUG VFase: Procesando tarea en índice " + i + ": ID=" + tarea.getId() + ", Desc=" + tarea.getDescripcion()); // DEBUG
-                    nuevaFase.agregarTareaMaestra(tarea.getId()); // Añadir ID a la fase
-                    System.out.println("DEBUG VFase: Tarea ID " + tarea.getId() + " añadida a la fase."); // DEBUG
+                    nuevaFase.agregarTareaMaestra(tarea.getId());
                 }
-                System.out.println("DEBUG VFase: Tareas añadidas. Lista de IDs en la fase: " + nuevaFase.getIdsTareasMaestras()); // DEBUG
-                // --- FIN AÑADIR TAREAS ---
 
                 fasesTemporales.add(nuevaFase);
-                System.out.println("DEBUG VFase: Fase añadida a la lista temporal. Tamaño actual de fasesTemporales: " + fasesTemporales.size()); // DEBUG
 
                 // Actualizar tabla de fases en la ventana principal
                 Object[] filaTabla = {
@@ -394,11 +323,11 @@ public class VentanaRegistrarProgramaMantenimiento extends JFrame {
                     tipoFreq,
                     ciclos == 0 ? "Recurrente" : ciclos,
                     horas,
-                    modeloTareasSel.getSize() + " tareas" // Mostrar cantidad
+                    modeloTareasSel.getSize() + " tareas"
                 };
                 modeloTablaFases.addRow(filaTabla);
 
-                ventanaFase.dispose(); // Cierra la ventana de fase
+                ventanaFase.dispose();
 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(ventanaFase, "Por favor, ingrese valores numéricos válidos para Frecuencia, Ciclos y Horas.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -406,7 +335,7 @@ public class VentanaRegistrarProgramaMantenimiento extends JFrame {
         });
 
         ventanaFase.setSize(900, 600);
-        ventanaFase.setLocationRelativeTo(this); // Centrado en la ventana padre
-        ventanaFase.setVisible(true); // Mostrar el dialogo
+        ventanaFase.setLocationRelativeTo(this);
+        ventanaFase.setVisible(true);
     }
 }

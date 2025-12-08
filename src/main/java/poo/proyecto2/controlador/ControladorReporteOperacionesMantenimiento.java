@@ -1,131 +1,35 @@
-package poo.proyecto2.reportes;
+package poo.proyecto2.controlador;
 
 import poo.proyecto2.modelo.equipos.NodoEquipo;
 import poo.proyecto2.modelo.mantenimiento.*;
 import poo.proyecto2.controlador.sistema.SistemaPrincipal;
+import poo.proyecto2.vista.reportes.VentanaReporteOperacionesMantenimiento; // Referencia a la vista
 
-import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.UnitValue;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class VentanaReporteOperacionesMantenimiento extends JFrame {
+public class ControladorReporteOperacionesMantenimiento {
 
-    private SistemaPrincipal sistema;
+    private SistemaPrincipal modelo;
+    private VentanaReporteOperacionesMantenimiento vista; // Referencia a la vista
 
-    // Componentes de la interfaz
-    private JLabel lblTitulo;
-    private JLabel lblOpcionImpresion;
-    private JRadioButton rbUnEquipoSimple;
-    private JRadioButton rbUnEquipoConComponentes;
-    private JRadioButton rbTodosEquiposConComponentes;
-    private ButtonGroup grupoOpciones;
-    private JPanel panelOpciones;
-    private JLabel lblIdEquipo;
-    private JTextField txtIdEquipo; // Visible solo si se elige una opción de "un equipo"
-    private JButton btnGenerarPDF;
-    private JButton btnCerrar;
-
-    public VentanaReporteOperacionesMantenimiento(SistemaPrincipal sistema) {
-        this.sistema = sistema;
-        inicializarComponentes();
-        configurarEventos();
-        setTitle("Reporte de Operaciones de Mantenimiento");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setResizable(false);
-        pack(); // Ajusta al contenido
-        setLocationRelativeTo(null); // Centrado en la pantalla
+    public ControladorReporteOperacionesMantenimiento(SistemaPrincipal modelo, VentanaReporteOperacionesMantenimiento vista) {
+        this.modelo = modelo;
+        this.vista = vista;
     }
 
-    private void inicializarComponentes() {
-        setLayout(new BorderLayout());
-
-        // --- Panel Superior: Título ---
-        lblTitulo = new JLabel("Generar Reporte de Operaciones de Mantenimiento", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
-        lblTitulo.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        add(lblTitulo, BorderLayout.NORTH);
-
-        // --- Panel Central: Opciones de Impresión ---
-        lblOpcionImpresion = new JLabel("Seleccione la opción de impresión:", SwingConstants.LEFT);
-        lblOpcionImpresion.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-
-        grupoOpciones = new ButtonGroup();
-        rbUnEquipoSimple = new JRadioButton("Un equipo (sin sus componentes)");
-        rbUnEquipoConComponentes = new JRadioButton("Un equipo (con sus componentes)");
-        rbTodosEquiposConComponentes = new JRadioButton("Todos los equipos (con sus componentes)");
-
-        grupoOpciones.add(rbUnEquipoSimple);
-        grupoOpciones.add(rbUnEquipoConComponentes);
-        grupoOpciones.add(rbTodosEquiposConComponentes);
-
-        // Seleccionar por defecto la opción de "Todos los equipos"
-        rbTodosEquiposConComponentes.setSelected(true);
-
-        panelOpciones = new JPanel(new GridLayout(0, 1));
-        panelOpciones.add(rbUnEquipoSimple);
-        panelOpciones.add(rbUnEquipoConComponentes);
-        panelOpciones.add(rbTodosEquiposConComponentes);
-
-        JPanel panelOpcionesContenedor = new JPanel(new BorderLayout());
-        panelOpcionesContenedor.add(lblOpcionImpresion, BorderLayout.NORTH);
-        panelOpcionesContenedor.add(panelOpciones, BorderLayout.CENTER);
-
-        // Panel para ID de equipo (visible solo si se elige una opción de "un equipo")
-        JPanel panelIdEquipo = new JPanel(new FlowLayout());
-        lblIdEquipo = new JLabel("ID del Equipo:");
-        txtIdEquipo = new JTextField(10);
-        txtIdEquipo.setVisible(false); // Inicialmente invisible
-        panelIdEquipo.add(lblIdEquipo);
-        panelIdEquipo.add(txtIdEquipo);
-        panelIdEquipo.setVisible(false); // Inicialmente invisible
-
-        JPanel panelCentral = new JPanel(new BorderLayout());
-        panelCentral.add(panelOpcionesContenedor, BorderLayout.CENTER);
-        panelCentral.add(panelIdEquipo, BorderLayout.SOUTH);
-
-        add(panelCentral, BorderLayout.CENTER);
-
-        // --- Panel Inferior: Botones ---
-        JPanel panelBotones = new JPanel(new FlowLayout());
-        btnGenerarPDF = new JButton("Generar PDF");
-        btnCerrar = new JButton("Cerrar");
-        panelBotones.add(btnGenerarPDF);
-        panelBotones.add(btnCerrar);
-        add(panelBotones, BorderLayout.SOUTH);
-    }
-
-    private void configurarEventos() {
-        // Evento para mostrar/ocultar el campo de ID según la selección
-        ActionListener listenerRadio = e -> {
-            boolean mostrarCampo = rbUnEquipoSimple.isSelected() || rbUnEquipoConComponentes.isSelected();
-            txtIdEquipo.setVisible(mostrarCampo);
-            txtIdEquipo.getParent().setVisible(mostrarCampo); // Mostrar el panel que lo contiene
-            // Reajusta el tamaño de la ventana
-            pack();
-        };
-        rbUnEquipoSimple.addActionListener(listenerRadio);
-        rbUnEquipoConComponentes.addActionListener(listenerRadio);
-        rbTodosEquiposConComponentes.addActionListener(listenerRadio);
-
-        btnGenerarPDF.addActionListener(e -> generarPDF());
-
-        btnCerrar.addActionListener(e -> dispose()); // Cierra la ventana
-    }
-
-    private void generarPDF() {
+    public void generarPDF() {
         String destino = "reportes/reporte_operaciones_mantenimiento.pdf"; // Nombre del archivo de salida
         new java.io.File("reportes").mkdirs(); // Crear carpeta si no existe
 
@@ -136,36 +40,36 @@ public class VentanaReporteOperacionesMantenimiento extends JFrame {
 
             document.add(new Paragraph("Reporte de Operaciones de Mantenimiento").setFontSize(20).setBold());
 
-            // Obtener la opción seleccionada
-            boolean esUnEquipo = rbUnEquipoSimple.isSelected() || rbUnEquipoConComponentes.isSelected();
-            boolean incluirComponentes = rbUnEquipoConComponentes.isSelected() || rbTodosEquiposConComponentes.isSelected();
+            // Obtener la opción seleccionada desde la vista
+            boolean esUnEquipo = vista.esUnEquipoSimpleSeleccionado() || vista.esUnEquipoConComponentesSeleccionado();
+            boolean incluirComponentes = vista.esUnEquipoConComponentesSeleccionado() || vista.sonTodosEquiposConComponentesSeleccionados();
 
             if (esUnEquipo) {
-                String idStr = txtIdEquipo.getText().trim();
+                String idStr = vista.getTxtIdEquipo().getText().trim(); // Obtener ID desde la vista
                 if (idStr.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Por favor, ingrese el ID del equipo.", "Error", JOptionPane.ERROR_MESSAGE);
+                    vista.mostrarMensaje("Por favor, ingrese el ID del equipo.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 try {
                     int idEquipo = Integer.parseInt(idStr);
-                    NodoEquipo equipo = sistema.buscarEquipoPorId(idEquipo);
+                    NodoEquipo equipo = modelo.buscarEquipoPorId(idEquipo); // Llamar al modelo
                     if (equipo == null) {
-                        JOptionPane.showMessageDialog(this, "No se encontró un equipo con ID: " + idEquipo, "Error", JOptionPane.ERROR_MESSAGE);
+                        vista.mostrarMensaje("No se encontró un equipo con ID: " + idEquipo, "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     // Generar reporte para un solo equipo
-                    if (rbUnEquipoSimple.isSelected()) {
+                    if (vista.esUnEquipoSimpleSeleccionado()) { // <-- Consultar estado desde la vista
                         agregarEquipoSimpleConMantenimientoAPDF(document, equipo, false); // No incluir componentes
-                    } else { // rbUnEquipoConComponentes.isSelected()
+                    } else { // vista.esUnEquipoConComponentesSeleccionado()
                         agregarEquipoSimpleConMantenimientoAPDF(document, equipo, true); // Incluir componentes
                     }
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Por favor, ingrese un ID de equipo válido (número entero).", "Error", JOptionPane.ERROR_MESSAGE);
+                    vista.mostrarMensaje("Por favor, ingrese un ID de equipo válido (número entero).", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-            } else { // rbTodosEquiposConComponentes.isSelected()
+            } else { // vista.sonTodosEquiposConComponentesSeleccionados()
                  // Generar reporte para todos los equipos
-                 List<NodoEquipo> todosLosEquipos = sistema.obtenerTodosLosEquipos();
+                 List<NodoEquipo> todosLosEquipos = modelo.obtenerTodosLosEquipos(); // Llamar al modelo
                  // Agrupar por ID de equipo principal para obtener las raíces
                  List<NodoEquipo> equiposRaiz = todosLosEquipos.stream()
                          .filter(eq -> eq.getEquipoPrincipal() == 0) // Solo raíces
@@ -177,10 +81,10 @@ public class VentanaReporteOperacionesMantenimiento extends JFrame {
             }
 
             document.close();
-            JOptionPane.showMessageDialog(this, "Reporte generado exitosamente en: " + destino, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            vista.mostrarMensaje("Reporte generado exitosamente en: " + destino, "Éxito", JOptionPane.INFORMATION_MESSAGE); // <-- Llamar a la vista
 
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(this, "No se pudo crear el archivo PDF en la ubicación: " + destino + "\nError: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            vista.mostrarMensaje("No se pudo crear el archivo PDF en la ubicación: " + destino + "\nError: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // <-- Llamar a la vista
             ex.printStackTrace();
         }
     }
@@ -193,7 +97,7 @@ public class VentanaReporteOperacionesMantenimiento extends JFrame {
         document.add(tableEquipo);
 
        // 2. Agregar Mantenimiento Preventivo (Programa)
-        ProgramaMantenimientoPreventivo programa = sistema.obtenerProgramaDeEquipo(equipo.getId());
+        ProgramaMantenimientoPreventivo programa = modelo.obtenerProgramaDeEquipo(equipo.getId()); // <-- Llamar al modelo
         if (programa != null && !programa.getFases().isEmpty()) {
             document.add(new Paragraph("\nMANTENIMIENTO PREVENTIVO").setBold());
             for (int i = 0; i < programa.getFases().size(); i++) { // <-- Este 'i' cambia en cada iteración
@@ -207,7 +111,7 @@ public class VentanaReporteOperacionesMantenimiento extends JFrame {
                 final int indiceFaseActual = i; // <-- Esta línea debe estar DENTRO del bucle 'for'
 
                 // Agregar órdenes asociadas a esta fase
-                List<OrdenTrabajo> ordenesFase = sistema.obtenerOrdenesPorEquipo(equipo.getId()).stream()
+                List<OrdenTrabajo> ordenesFase = modelo.obtenerOrdenesPorEquipo(equipo.getId()).stream() // <-- Llamar al modelo
                         .filter(orden -> orden instanceof OrdenTrabajoPreventiva && ((OrdenTrabajoPreventiva) orden).getIdFase() == indiceFaseActual) // <-- Usar la copia
                         .collect(Collectors.toList());
                 if (!ordenesFase.isEmpty()) {
@@ -224,7 +128,7 @@ public class VentanaReporteOperacionesMantenimiento extends JFrame {
         }
 
         // 3. Agregar Mantenimiento Correctivo (Órdenes correctivas)
-        List<OrdenTrabajo> ordenesCorrectivas = sistema.obtenerOrdenesPorEquipo(equipo.getId()).stream()
+        List<OrdenTrabajo> ordenesCorrectivas = modelo.obtenerOrdenesPorEquipo(equipo.getId()).stream() // <-- Llamar al modelo
                 .filter(orden -> orden instanceof OrdenTrabajoCorrectiva)
                 .collect(Collectors.toList());
         if (!ordenesCorrectivas.isEmpty()) {

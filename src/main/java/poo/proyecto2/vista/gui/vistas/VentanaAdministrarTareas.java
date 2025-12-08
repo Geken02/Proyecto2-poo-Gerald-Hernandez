@@ -2,7 +2,8 @@ package poo.proyecto2.vista.gui.vistas;
 
 import poo.proyecto2.modelo.mantenimiento.TareaMantenimiento;
 import poo.proyecto2.controlador.sistema.SistemaPrincipal;
-import poo.proyecto2.vista.gui.VentanaMenuPrincipal; // Ventana padre
+import poo.proyecto2.vista.gui.VentanaMenuPrincipal;
+import poo.proyecto2.controlador.ControladorAdministrarTareas;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -14,7 +15,7 @@ import java.util.List;
 public class VentanaAdministrarTareas extends JFrame {
 
     private SistemaPrincipal sistema;
-    private VentanaMenuPrincipal ventanaPadre; // Referencia a la ventana principal
+    private VentanaMenuPrincipal ventanaPadre;
 
     // Componentes
     private JLabel lblTitulo;
@@ -29,9 +30,14 @@ public class VentanaAdministrarTareas extends JFrame {
     // Columnas de la tabla
     private static final String[] COLUMNAS = {"ID", "Descripción"};
 
+    // Referencia al controlador
+    private ControladorAdministrarTareas controlador;
+
     public VentanaAdministrarTareas(SistemaPrincipal sistema, VentanaMenuPrincipal ventanaPadre) {
         this.sistema = sistema;
         this.ventanaPadre = ventanaPadre;
+        // Crear el controlador pasando el modelo y la vista
+        this.controlador = new ControladorAdministrarTareas(sistema, this);
         inicializarComponentes();
         configurarEventos();
         setTitle("Administrar Tareas Maestras");
@@ -39,7 +45,8 @@ public class VentanaAdministrarTareas extends JFrame {
         setResizable(true);
         setSize(600, 400);
         setLocationRelativeTo(ventanaPadre);
-        actualizarTabla(); // Carga inicial de tareas
+        // Llamar al controlador para cargar los datos iniciales
+        controlador.cargarTareasIniciales();
     }
 
     private void inicializarComponentes() {
@@ -55,7 +62,7 @@ public class VentanaAdministrarTareas extends JFrame {
         modeloTabla = new DefaultTableModel(COLUMNAS, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // No se puede editar directamente la tabla
+                return false; 
             }
         };
         tablaTareas = new JTable(modeloTabla);
@@ -77,45 +84,23 @@ public class VentanaAdministrarTareas extends JFrame {
     }
 
     private void configurarEventos() {
-        btnAgregar.addActionListener(e -> {
-            String descripcion = JOptionPane.showInputDialog(this, "Ingrese la descripción de la nueva tarea:");
-            if (descripcion != null && !descripcion.trim().isEmpty()) {
-                sistema.crearTareaMaestra(descripcion.trim());
-                JOptionPane.showMessageDialog(this, "Tarea agregada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                actualizarTabla(); // Refresca la vista
-            }
-        });
-
-        btnEliminar.addActionListener(e -> {
-            int filaSeleccionada = tablaTareas.getSelectedRow();
-            if (filaSeleccionada >= 0) {
-                int idTarea = (int) modeloTabla.getValueAt(filaSeleccionada, 0); // Obtener ID de la columna 0
-                int respuesta = JOptionPane.showConfirmDialog(
-                        this,
-                        "¿Está seguro de que desea eliminar la tarea con ID " + idTarea + "?",
-                        "Confirmar Eliminación",
-                        JOptionPane.YES_NO_OPTION
-                );
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    // TODO: Implementar sistema.eliminarTareaMaestra(idTarea) en SistemaPrincipal si es necesario
-                    // Por ahora, asumiremos que no se pueden eliminar tareas ya que podrían estar asociadas a fases/órdenes.
-                    JOptionPane.showMessageDialog(this, "La eliminación de tareas maestras no está permitida para mantener la integridad de los datos relacionados (fases, órdenes).", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                    // Si se implementa eliminación, llamaría a sistema.eliminarTareaMaestra(idTarea) y luego actualizarTabla().
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, seleccione una tarea de la lista para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
-        btnCerrar.addActionListener(e -> dispose()); // Cierra la ventana
+        btnAgregar.addActionListener(e -> controlador.agregarTarea());
+        btnEliminar.addActionListener(e -> controlador.eliminarTarea());
+        btnCerrar.addActionListener(e -> dispose()); 
     }
 
-    private void actualizarTabla() {
-        modeloTabla.setRowCount(0); // Limpia la tabla
+    // --- Métodos para que el controlador interactúe con la vista ---
+    public void actualizarTabla() {
+        modeloTabla.setRowCount(0); 
         List<TareaMantenimiento> tareas = sistema.obtenerTodasLasTareasMaestras();
         for (TareaMantenimiento tarea : tareas) {
             Object[] fila = {tarea.getId(), tarea.getDescripcion()};
             modeloTabla.addRow(fila);
         }
     }
+
+    // Métodos para que el controlador acceda a componentes específicos
+    public JTable getTablaTareas() { return tablaTareas; }
+    public DefaultTableModel getModeloTabla() { return modeloTabla; }
+    // ---
 }
